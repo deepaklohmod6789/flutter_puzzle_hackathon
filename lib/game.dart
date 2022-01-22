@@ -10,6 +10,7 @@ class MyGame extends StatefulWidget {
 }
 
 class _MyGameState extends State<MyGame> {
+  final GlobalKey<PuzzleBoardState> _puzzleKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +24,19 @@ class _MyGameState extends State<MyGame> {
               color: Colors.white,
               child: LayoutBuilder(
                 builder: (context,constraints){
-                  return PuzzleBoard(size: constraints.biggest);
+                  return PuzzleBoard(
+                    key: _puzzleKey,
+                    size: constraints.biggest,
+                  );
                 },
               ),
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: ()=>_puzzleKey.currentState!.getHint(),
+        child: const Icon(Icons.help_outline_rounded),
       ),
     );
   }

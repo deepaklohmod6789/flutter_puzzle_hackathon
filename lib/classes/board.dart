@@ -4,7 +4,7 @@ import 'package:flutter_puzzle_hackathon/classes/tile.dart';
 class Board{
 
   static bool isSolved(List<Tile> tiles, int maxRows){
-    List<Tile> sortedTiles=_orderList(tiles);
+    List<Tile> sortedTiles=orderList(tiles);
     for (int index=0;index<pow(maxRows,2)-1;index++){
       if(sortedTiles[index].value!=index+1){
         return false;
@@ -14,7 +14,7 @@ class Board{
   }
 
   ///to reorder list based on offset or position of tile
-  static List<Tile> _orderList(List<Tile> tiles){
+  static List<Tile> orderList(List<Tile> tiles){
     List<Tile> tempXOrdered=[];
     tempXOrdered.addAll(tiles);
     tempXOrdered.sort((a, b) => a.left.compareTo(b.left));

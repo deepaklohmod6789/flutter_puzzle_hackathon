@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_puzzle_hackathon/classes/board.dart';
+import 'package:flutter_puzzle_hackathon/classes/hint_algo_solve.dart';
 import 'package:flutter_puzzle_hackathon/classes/tile.dart';
 import 'package:flutter_puzzle_hackathon/classes/zero_tile.dart';
 
@@ -9,11 +11,12 @@ class PuzzleBoard extends StatefulWidget {
   const PuzzleBoard({Key? key,required this.size}) : super(key: key);
 
   @override
-  _PuzzleBoardState createState() => _PuzzleBoardState();
+  PuzzleBoardState createState() => PuzzleBoardState();
 }
 
-class _PuzzleBoardState extends State<PuzzleBoard> {
+class PuzzleBoardState extends State<PuzzleBoard> {
   List<int> initial=[];
+  List<int> goalState=[];
   List<Tile> tiles=[];
   static const int maxRows=4;
   static const double tilePadding=10;
@@ -21,11 +24,11 @@ class _PuzzleBoardState extends State<PuzzleBoard> {
 
   @override
   void initState() {
-    getPuzzle();
+    _getPuzzle();
     super.initState();
   }
 
-  void getPuzzle(){
+  void _getPuzzle(){
     for (int index=0;index<pow(maxRows,2);index++){
       initial.add(index);
       Size sizeBox = Size((widget.size.width-5*tilePadding) / maxRows, (widget.size.width-5*tilePadding) / maxRows);
@@ -37,28 +40,30 @@ class _PuzzleBoardState extends State<PuzzleBoard> {
       tiles.add(Tile(size: sizeBox, left: offsetTemp.dx, top: offsetTemp.dy));
 
     }
-    checkSolvability();
+    initial.shuffle();
+    _checkSolvability();
     for (int i=0;i<initial.length;i++){
       tiles[i].value=initial[i];
+      goalState.add(i+1);
     }
-    int index=initial.indexOf(0);
+    goalState.add(0);
     setState(() {
-      tiles[index].isEmpty=true;
+
     });
   }
 
-  void checkSolvability(){
-    initial.shuffle();
+  void _checkSolvability(){
     bool puzzleIsUnSolveable=Board.haveOddInverts(initial);
     if(puzzleIsUnSolveable){
-      checkSolvability();
+      initial.shuffle();
+      _checkSolvability();
     }
   }
 
-  void changePosition(int currentIndex,Tile currentTile){
+  void _changePosition(int currentIndex,Tile currentTile){
     if(!isTapped){
       isTapped=true;
-      int i=tiles.indexWhere((element) => element.isEmpty);
+      int i=tiles.indexWhere((element) => element.value==0);
       ZeroTile zeroTile=ZeroTile(currentTile,maxRows,List.from(tiles));
       bool movePlayed=false;
 
@@ -81,6 +86,24 @@ class _PuzzleBoardState extends State<PuzzleBoard> {
         }
       }
     }
+  }
+
+  void getHint()async{
+    List<int> currentState=[];
+    List<List<int>> goalStateIn2d=[];
+    List<List<int>> currentStateIn2d=[];
+    for(Tile tile in Board.orderList(List.from(tiles))){
+      currentState.add(tile.value);
+    }
+    for(int i=0;i<maxRows;i++){
+      List<int> temp=goalState.sublist(i*maxRows,maxRows*(i+1));
+      List<int> temp2=currentState.sublist(i*maxRows,maxRows*(i+1));
+      goalStateIn2d.add(temp);
+      currentStateIn2d.add(temp2);
+    }
+    Solve solve=Solve(maxRows, currentStateIn2d, goalStateIn2d);
+    final result = await compute(getMoves, solve);
+    print(result);
   }
 
   @override
@@ -113,8 +136,8 @@ class _PuzzleBoardState extends State<PuzzleBoard> {
             duration: const Duration(milliseconds: 200),
             left: tiles[index].left,
             top: tiles[index].top,
-            child: tiles[index].isEmpty?const SizedBox():GestureDetector(
-              onTap: ()=>changePosition(index,tiles[index]),
+            child: tiles[index].value==0?const SizedBox():GestureDetector(
+              onTap: ()=>_changePosition(index,tiles[index]),
               child: SizedBox(
                 height: tiles[index].size.height,
                 width: tiles[index].size.width,
@@ -137,4 +160,13 @@ class _PuzzleBoardState extends State<PuzzleBoard> {
       ],
     );
   }
+}
+
+int computationallyExpensiveTask(int value) {
+  var sum = 0;
+  for (var i = 0; i <= value; i++) {
+    sum += i;
+  }
+  print('finished');
+  return sum;
 }
