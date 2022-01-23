@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_puzzle_hackathon/game.dart';
-import 'package:flutter_puzzle_hackathon/test.dart';
+import 'package:flutter_puzzle_hackathon/testing/MyGame2.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Test(),
+      home: const MyGame(),
     );
   }
 }
