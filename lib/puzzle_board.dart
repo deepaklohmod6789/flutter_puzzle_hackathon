@@ -161,12 +161,3 @@ class PuzzleBoardState extends State<PuzzleBoard> {
     );
   }
 }
-
-int computationallyExpensiveTask(int value) {
-  var sum = 0;
-  for (var i = 0; i <= value; i++) {
-    sum += i;
-  }
-  print('finished');
-  return sum;
-}
