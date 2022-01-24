@@ -109,7 +109,7 @@ class PuzzleBoardState extends State<PuzzleBoard> with SingleTickerProviderState
       currentStateIn2d.add(temp2);
     }
     Solve solve=Solve(maxRows, currentStateIn2d, goalStateIn2d);
-    final result = await compute(getMoves, solve);
+    List<String> result = await compute(getMoves, solve);
     print(result);
   }
 
