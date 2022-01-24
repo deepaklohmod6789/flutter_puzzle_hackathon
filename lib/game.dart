@@ -33,6 +33,7 @@ class _MyGameState extends State<MyGame> {
               ),
             ),
           ),
+          ElevatedButton(onPressed: ()=>_puzzleKey.currentState!.shuffle(), child: const Icon(Icons.shuffle)),
         ],
       ),
       floatingActionButton: FloatingActionButton(

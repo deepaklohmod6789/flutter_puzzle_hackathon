@@ -106,6 +106,17 @@ class PuzzleBoardState extends State<PuzzleBoard> {
     print(result);
   }
 
+  void shuffle(){
+    initial.shuffle();
+    _checkSolvability();
+    for (int i=0;i<initial.length;i++){
+      tiles[i].value=initial[i];
+    }
+    setState(() {
+
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(

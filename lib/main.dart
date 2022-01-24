@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_puzzle_hackathon/game.dart';
-import 'package:flutter_puzzle_hackathon/testing/MyGame2.dart';
 
 void main() {
   runApp(const MyApp());
