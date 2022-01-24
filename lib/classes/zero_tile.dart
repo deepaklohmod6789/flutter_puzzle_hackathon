@@ -37,8 +37,8 @@ class ZeroTile{
   List<Tile> orderList(){
     List<Tile> tempXOrdered=[];
     tempXOrdered.addAll(tiles);
-    tempXOrdered.sort((a, b) => a.left.compareTo(b.left));
-    tempXOrdered.sort((a, b) => a.top.compareTo(b.top));
+    tempXOrdered.sort((a, b) => a.offset.dx.compareTo(b.offset.dx));
+    tempXOrdered.sort((a, b) => a.offset.dy.compareTo(b.offset.dy));
     return tempXOrdered;
   }
 

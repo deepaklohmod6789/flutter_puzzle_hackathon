@@ -5,6 +5,7 @@ import 'package:flutter_puzzle_hackathon/classes/board.dart';
 import 'package:flutter_puzzle_hackathon/classes/hint_algo_solve.dart';
 import 'package:flutter_puzzle_hackathon/classes/tile.dart';
 import 'package:flutter_puzzle_hackathon/classes/zero_tile.dart';
+import 'package:flutter_puzzle_hackathon/widgets/tile_widget.dart';
 
 class PuzzleBoard extends StatefulWidget {
   final Size size;
@@ -14,30 +15,38 @@ class PuzzleBoard extends StatefulWidget {
   PuzzleBoardState createState() => PuzzleBoardState();
 }
 
-class PuzzleBoardState extends State<PuzzleBoard> {
+class PuzzleBoardState extends State<PuzzleBoard> with SingleTickerProviderStateMixin{
+  static const int maxRows=4;
+  static const double tilePadding=10;
+  bool canTap = false;
   List<int> initial=[];
   List<int> goalState=[];
   List<Tile> tiles=[];
-  static const int maxRows=4;
-  static const double tilePadding=10;
-  bool isTapped = false;
+  late final AnimationController animationController;
 
   @override
   void initState() {
+    animationController = AnimationController(duration: const Duration(seconds: 2), vsync: this);
     _getPuzzle();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
   }
 
   void _getPuzzle(){
     for (int index=0;index<pow(maxRows,2);index++){
       initial.add(index);
-      Size sizeBox = Size((widget.size.width-5*tilePadding) / maxRows, (widget.size.width-5*tilePadding) / maxRows);
+      Size sizeBox = Size((widget.size.width-(maxRows+1)*tilePadding) / maxRows, (widget.size.width-(maxRows+1)*tilePadding) / maxRows);
       Offset offsetTemp = Offset(
         index % maxRows * sizeBox.width+(index%maxRows+1)*tilePadding,
         index ~/ maxRows * sizeBox.height+(index~/maxRows+1)*tilePadding,
       );
 
-      tiles.add(Tile(size: sizeBox, left: offsetTemp.dx, top: offsetTemp.dy));
+      tiles.add(Tile(size: sizeBox, offset: offsetTemp));
 
     }
     initial.shuffle();
@@ -48,7 +57,7 @@ class PuzzleBoardState extends State<PuzzleBoard> {
     }
     goalState.add(0);
     setState(() {
-
+      canTap=true;
     });
   }
 
@@ -61,24 +70,22 @@ class PuzzleBoardState extends State<PuzzleBoard> {
   }
 
   void _changePosition(int currentIndex,Tile currentTile){
-    if(!isTapped){
-      isTapped=true;
-      int i=tiles.indexWhere((element) => element.value==0);
+    if(canTap){
+      canTap=false;
+      int zeroIndex=tiles.indexWhere((element) => element.value==0);
       ZeroTile zeroTile=ZeroTile(currentTile,maxRows,List.from(tiles));
       bool movePlayed=false;
 
       if(zeroTile.isOnLeft()||zeroTile.isOnRight()||zeroTile.isOnUp()||zeroTile.isOnBelow()){
         movePlayed=true;
-        double x1=tiles[currentIndex].left;
-        double y1=tiles[currentIndex].top;
-        tiles[currentIndex].left=tiles[i].left;
-        tiles[currentIndex].top=tiles[i].top;
-        tiles[i].left=x1;
-        tiles[i].top=y1;
+        double x1=tiles[currentIndex].offset.dx;
+        double y1=tiles[currentIndex].offset.dy;
+        tiles[currentIndex].offset=tiles[zeroIndex].offset;
+        tiles[zeroIndex].offset=Offset(x1,y1);
       }
 
       setState(() {
-        isTapped=false;
+        canTap=true;
       });
       if(movePlayed){
         if(Board.isSolved(tiles, maxRows)){
@@ -107,13 +114,20 @@ class PuzzleBoardState extends State<PuzzleBoard> {
   }
 
   void shuffle(){
+    canTap=false;
+    animationController.forward();
     initial.shuffle();
     _checkSolvability();
     for (int i=0;i<initial.length;i++){
       tiles[i].value=initial[i];
     }
-    setState(() {
-
+    animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        animationController.reset();
+        setState(() {
+          canTap=true;
+        });
+      }
     });
   }
 
@@ -143,29 +157,11 @@ class PuzzleBoardState extends State<PuzzleBoard> {
           },
         ),
         ...List.generate(tiles.length, (index){
-          return AnimatedPositioned(
-            duration: const Duration(milliseconds: 200),
-            left: tiles[index].left,
-            top: tiles[index].top,
-            child: tiles[index].value==0?const SizedBox():GestureDetector(
-              onTap: ()=>_changePosition(index,tiles[index]),
-              child: SizedBox(
-                height: tiles[index].size.height,
-                width: tiles[index].size.width,
-                child: Neumorphic(
-                  style: NeumorphicStyle(
-                    boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(12)),
-                    depth: 8,
-                    lightSource: LightSource.topRight,
-                  ),
-                  child: Center(
-                    child: Text(
-                      tiles[index].value.toString(),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          return TileWidget(
+            index: index,
+            tile: tiles[index],
+            changePosition: _changePosition,
+            animationController: animationController,
           );
         })
       ],
