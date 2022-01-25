@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_puzzle_hackathon/classes/tile.dart';
 
@@ -7,7 +6,8 @@ class TileWidget extends StatelessWidget {
   final Tile tile;
   final Function changePosition;
   final AnimationController animationController;
-  late final Animation<double> animation;
+  late Animation<Offset> animation;
+  final Offset centerOffset;
 
   TileWidget({
     Key? key,
@@ -15,30 +15,27 @@ class TileWidget extends StatelessWidget {
     required this.tile,
     required this.changePosition,
     required this.animationController,
+    required this.centerOffset,
   }) : super(key: key){
-    animation = TweenSequence(
-      <TweenSequenceItem<double>>[
-        TweenSequenceItem<double>(
-          tween: Tween(begin: 0.0, end: 2*pi).chain(CurveTween(curve: Curves.linear)),
-          weight: 50.0,
-        ),
-        TweenSequenceItem<double>(
-          tween: ConstantTween<double>(pi*2),
-          weight: 50.0,
-        ),
-      ],
-    ).animate(animationController);
+    assignShuffleAnimation();
+  }
+
+  void assignShuffleAnimation(){
+    animation=Tween(begin: tile.offset,end: centerOffset).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.ease,
+        reverseCurve: const ElasticInCurve(0.95),
+      ),);
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedPositioned(
-      top: tile.offset.dy,
-      left: tile.offset.dx,
-      duration: const Duration(milliseconds: 200),
-      child: AnimatedBuilder(
-        animation: animationController,
-        child: tile.value==0?const SizedBox():GestureDetector(
+    return AnimatedBuilder(
+      animation: animation,
+      child: tile.value==0?const SizedBox():AnimatedContainer(
+        duration: const Duration(milliseconds: 2000),
+        child: GestureDetector(
           onTap: ()=>changePosition(index,tile),
           child: SizedBox(
             height: tile.size.height,
@@ -57,17 +54,13 @@ class TileWidget extends StatelessWidget {
             ),
           ),
         ),
-        builder: (context,child){
-          var transform = Matrix4.identity();
-          transform.setEntry(3, 2, 0.001);
-          transform.rotateY(animation.value);
-          return Transform(
-            transform: transform,
-            alignment: Alignment.center,
-            child: child,
-          );
-        },
       ),
+      builder: (context,child){
+        return Transform.translate(
+          offset: animation.value,
+          child: child,
+        );
+      },
     );
   }
 }

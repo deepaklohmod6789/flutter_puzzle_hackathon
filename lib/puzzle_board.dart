@@ -15,7 +15,7 @@ class PuzzleBoard extends StatefulWidget {
   PuzzleBoardState createState() => PuzzleBoardState();
 }
 
-class PuzzleBoardState extends State<PuzzleBoard> with SingleTickerProviderStateMixin{
+class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
   static const int maxRows=4;
   static const double tilePadding=10;
   bool canTap = false;
@@ -23,10 +23,11 @@ class PuzzleBoardState extends State<PuzzleBoard> with SingleTickerProviderState
   List<int> goalState=[];
   List<Tile> tiles=[];
   late final AnimationController animationController;
+  late Offset centerOffset;
 
   @override
   void initState() {
-    animationController = AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    animationController = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this);
     _getPuzzle();
     super.initState();
   }
@@ -49,6 +50,7 @@ class PuzzleBoardState extends State<PuzzleBoard> with SingleTickerProviderState
       tiles.add(Tile(size: sizeBox, offset: offsetTemp));
 
     }
+    centerOffset=Offset((widget.size.width-tiles.first.size.width)/2,(widget.size.height-tiles.first.size.height)/2);
     initial.shuffle();
     _checkSolvability();
     for (int i=0;i<initial.length;i++){
@@ -114,21 +116,25 @@ class PuzzleBoardState extends State<PuzzleBoard> with SingleTickerProviderState
   }
 
   void shuffle(){
-    canTap=false;
-    animationController.forward();
-    initial.shuffle();
-    _checkSolvability();
-    for (int i=0;i<initial.length;i++){
-      tiles[i].value=initial[i];
-    }
-    animationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        animationController.reset();
-        setState(() {
-          canTap=true;
-        });
+    if(canTap){
+      canTap=false;
+      animationController.forward();
+      initial.shuffle();
+      _checkSolvability();
+      for (int i=0;i<initial.length;i++){
+        tiles[i].value=initial[i];
       }
-    });
+      animationController.addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          animationController.reverse();
+          setState(() {
+            canTap=true;
+          });
+        }else if (status == AnimationStatus.dismissed) {
+          animationController.reset();
+        }
+      });
+    }
   }
 
   @override
@@ -160,6 +166,7 @@ class PuzzleBoardState extends State<PuzzleBoard> with SingleTickerProviderState
           return TileWidget(
             index: index,
             tile: tiles[index],
+            centerOffset: centerOffset,
             changePosition: _changePosition,
             animationController: animationController,
           );
