@@ -76,24 +76,20 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
       canTap=false;
       int zeroIndex=tiles.indexWhere((element) => element.value==0);
       ZeroTile zeroTile=ZeroTile(currentTile,maxRows,List.from(tiles));
-      bool movePlayed=false;
 
       if(zeroTile.isOnLeft()||zeroTile.isOnRight()||zeroTile.isOnUp()||zeroTile.isOnBelow()){
-        movePlayed=true;
         double x1=tiles[currentIndex].offset.dx;
         double y1=tiles[currentIndex].offset.dy;
         tiles[currentIndex].offset=tiles[zeroIndex].offset;
         tiles[zeroIndex].offset=Offset(x1,y1);
+        if(Board.isSolved(tiles, maxRows)){
+          print('solved');
+        }
       }
 
       setState(() {
         canTap=true;
       });
-      if(movePlayed){
-        if(Board.isSolved(tiles, maxRows)){
-          print('solved');
-        }
-      }
     }
   }
 

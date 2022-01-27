@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_puzzle_hackathon/classes/tile.dart';
 
@@ -7,6 +8,7 @@ class TileWidget extends StatelessWidget {
   final Function changePosition;
   final AnimationController animationController;
   late Animation<Offset> animation;
+  late Animation<double> rotate;
   final Offset centerOffset;
 
   TileWidget({
@@ -21,18 +23,25 @@ class TileWidget extends StatelessWidget {
   }
 
   void assignShuffleAnimation(){
+    //for phone have reverse curve and remove rotate and for web remove reverse cruve and add rotate
     animation=Tween(begin: tile.offset,end: centerOffset).animate(
       CurvedAnimation(
         parent: animationController,
         curve: Curves.ease,
-        reverseCurve: const ElasticInCurve(0.95),
+        //reverseCurve: const ElasticInCurve(0.95),
+      ),);
+    rotate=Tween(begin: 0.0,end: 2*pi).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.ease,
+        //reverseCurve: const ElasticInCurve(0.95),
       ),);
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: animation,
+      animation: animationController,
       child: tile.value==0?const SizedBox():AnimatedContainer(
         duration: const Duration(milliseconds: 2000),
         child: GestureDetector(
@@ -58,7 +67,10 @@ class TileWidget extends StatelessWidget {
       builder: (context,child){
         return Transform.translate(
           offset: animation.value,
-          child: child,
+          child: Transform.rotate(
+            angle: rotate.value,
+            child: child,
+          ),
         );
       },
     );
