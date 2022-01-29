@@ -109,6 +109,7 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
     Solve solve=Solve(maxRows, currentStateIn2d, goalStateIn2d);
     List<String> result = await compute(getMoves, solve);
     print(result);
+    shuffle();
   }
 
   void shuffle(){

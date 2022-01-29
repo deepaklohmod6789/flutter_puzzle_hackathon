@@ -5,11 +5,11 @@ import 'package:flutter_puzzle_hackathon/classes/tile.dart';
 class TileWidget extends StatelessWidget {
   final int index;
   final Tile tile;
+  final Offset centerOffset;
   final Function changePosition;
   final AnimationController animationController;
-  late Animation<Offset> animation;
-  late Animation<double> rotate;
-  final Offset centerOffset;
+  late final Animation<Offset> animation;
+  late final Animation<double> rotate;
 
   TileWidget({
     Key? key,

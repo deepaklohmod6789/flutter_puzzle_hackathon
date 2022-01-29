@@ -13,10 +13,10 @@ class MyGame extends StatefulWidget {
 class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
   final GlobalKey<PuzzleBoardState> _puzzleKey = GlobalKey();
   Matrix4 perspective = _pmat(1.0);
-  static const double degrees=60;
+  static const double degrees=60.0;
   late final AnimationController animationController;
-  late final Animation scaleAnimation;
-  late final Animation rotateAnimation;
+  late final Animation<double> scaleAnimation;
+  late final Animation<double> rotateAnimation;
 
   static Matrix4 _pmat(double pv) {
     return Matrix4(
@@ -33,8 +33,8 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
       vsync: this,
       duration: const Duration(seconds: 1),
     );
-    rotateAnimation=Tween(begin: degrees,end: 0).animate(CurvedAnimation(parent: animationController, curve: Curves.easeInCirc));
-    scaleAnimation=Tween(begin: 0.5,end: 1).animate(CurvedAnimation(parent: animationController, curve: Curves.easeInCirc));
+    rotateAnimation=Tween(begin: degrees,end: 0.0).animate(CurvedAnimation(parent: animationController, curve: Curves.easeInCirc));
+    scaleAnimation=Tween(begin: 0.5,end: 1.0).animate(CurvedAnimation(parent: animationController, curve: Curves.easeInCirc));
     Future.delayed(const Duration(seconds: 1),(){
       animationController.forward();
     });
@@ -84,13 +84,7 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        //onPressed: ()=>_puzzleKey.currentState!.getHint(),
-        onPressed: (){
-          animationController.reset();
-          Future.delayed(const Duration(seconds: 1),(){
-            animationController.forward();
-          });
-        },
+        onPressed: ()=>_puzzleKey.currentState!.getHint(),
         child: const Icon(Icons.help_outline_rounded),
       ),
     );

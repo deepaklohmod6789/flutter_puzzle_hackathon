@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "538763198812",
+    "project_id": "flutter-puzzle-hackathon-448f8",
+    "storage_bucket": "flutter-puzzle-hackathon-448f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:538763198812:android:8e581bc4ab9e2660648199",
+        "android_client_info": {
+          "package_name": "com.exordium.flutter_puzzle_hackathon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "538763198812-j90vclr3cqf7agk1u49r6cdoki0c4uf8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.exordium.flutter_puzzle_hackathon",
+            "certificate_hash": "168a1caf9dba9a2deb367e493870415d391ffed5"
+          }
+        },
+        {
+          "client_id": "538763198812-8qho9ig3o2ecthl5m19tcooh1fp9pg0b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBE-7R0yB3wCgYAw9fOUy3e-qXsruzWdpk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "538763198812-8qho9ig3o2ecthl5m19tcooh1fp9pg0b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

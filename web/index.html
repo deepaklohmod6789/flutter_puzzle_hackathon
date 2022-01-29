@@ -36,6 +36,22 @@
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+  <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCBpwUgEzecjiclaVYbVqmevaK0i9tjV7s",
+        authDomain: "flutter-puzzle-hackathon-448f8.firebaseapp.com",
+        projectId: "flutter-puzzle-hackathon-448f8",
+        storageBucket: "flutter-puzzle-hackathon-448f8.appspot.com",
+        messagingSenderId: "538763198812",
+        appId: "1:538763198812:web:81d5a9a07c139715648199",
+        measurementId: "G-7F6PFZ2MZS"
+      };
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
   <script>
     var serviceWorkerVersion = null;
     var scriptLoaded = false;
