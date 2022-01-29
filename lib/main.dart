@@ -1,9 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_puzzle_hackathon/game.dart';
+import 'package:flutter_puzzle_hackathon/routing/fluro_routing.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  FluroRouting.setupRouter();
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
@@ -19,7 +20,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyGame(),
+      initialRoute: '/home',
+      onGenerateRoute: FluroRouting.router.generator,
     );
   }
 }

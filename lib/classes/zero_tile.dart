@@ -1,4 +1,4 @@
-import 'package:flutter_puzzle_hackathon/classes/tile.dart';
+import 'package:flutter_puzzle_hackathon/models/tile.dart';
 
 class ZeroTile{
   final int maxRows;
