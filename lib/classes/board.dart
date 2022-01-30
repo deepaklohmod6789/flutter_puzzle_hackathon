@@ -4,9 +4,8 @@ import 'package:flutter_puzzle_hackathon/models/tile.dart';
 class Board{
 
   static bool isSolved(List<Tile> tiles, int maxRows){
-    List<Tile> sortedTiles=orderList(tiles);
     for (int index=0;index<pow(maxRows,2)-1;index++){
-      if(sortedTiles[index].value!=index+1){
+      if(tiles[index].value!=index+1){
         return false;
       }
     }

@@ -3,10 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
 import 'package:flutter_puzzle_hackathon/pages/puzzle_board.dart';
+import 'package:flutter_puzzle_hackathon/widgets/other_player_board.dart';
 
 class MyGame extends StatefulWidget {
   final RoomModel? roomModel;
-  const MyGame({Key? key,this.roomModel}) : super(key: key);
+  final String? currentUserName;
+
+  const MyGame({
+    Key? key,
+    this.roomModel,
+    this.currentUserName,
+  }) : super(key: key);
 
   @override
   _MyGameState createState() => _MyGameState();
@@ -14,21 +21,12 @@ class MyGame extends StatefulWidget {
 
 class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
   final GlobalKey<PuzzleBoardState> _puzzleKey = GlobalKey();
-  Matrix4 perspective = _pmat(1.0);
   static const double degrees=60.0;
+  static const double tilePadding=10.0;
   late final AnimationController animationController;
   late final Animation<double> scaleAnimation;
   late final Animation<double> rotateAnimation;
   List<Widget> boards=[];
-
-  static Matrix4 _pmat(double pv) {
-    return Matrix4(
-      1.0, 0.0, 0.0, 0.0,
-      0.0, 1.0, 0.0, 0.0,
-      0.0, 0.0, 1.0, pv * 0.001,
-      0.0, 0.0, 0.0, 1.0,
-    );
-  }
 
   @override
   void initState() {
@@ -55,24 +53,31 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
     if(widget.roomModel!=null){
       boards.add(Board(
         maxRows: widget.roomModel!.puzzleSize,
-        perspective: perspective,
+        tilePadding: tilePadding,
+        isOtherPlayerBoard: true,
+        roomModel: widget.roomModel,
+        currentUserName: widget.currentUserName,
         animationController: animationController,
         scaleAnimation: scaleAnimation,
         rotateAnimation: rotateAnimation,
       ));
       boards.add(Board(
         maxRows: widget.roomModel!.puzzleSize,
+        currentUserName: widget.currentUserName,
+        tilePadding: tilePadding,
+        isOtherPlayerBoard: false,
+        roomModel: widget.roomModel,
         puzzleKey: _puzzleKey,
-        perspective: perspective,
         animationController: animationController,
         scaleAnimation: scaleAnimation,
         rotateAnimation: rotateAnimation,
       ));
     } else {
       boards.add(Board(
-        maxRows: 5,
+        maxRows: 4,
+        tilePadding: tilePadding,
+        isOtherPlayerBoard: false,
         puzzleKey: _puzzleKey,
-        perspective: perspective,
         animationController: animationController,
         scaleAnimation: scaleAnimation,
         rotateAnimation: rotateAnimation,
@@ -97,20 +102,37 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
 
 class Board extends StatelessWidget {
   final int maxRows;
+  final double tilePadding;
+  final bool isOtherPlayerBoard;
   final GlobalKey<PuzzleBoardState>? puzzleKey;
-  final Matrix4 perspective;
   final AnimationController animationController;
   final Animation<double> scaleAnimation;
   final Animation<double> rotateAnimation;
-  const Board({
+  final Matrix4 perspective = _pmat(1.0);
+  RoomModel? roomModel;
+  String? currentUserName;
+
+  Board({
     Key? key,
     this.puzzleKey,
     required this.maxRows,
+    required this.tilePadding,
+    required this.isOtherPlayerBoard,
     required this.animationController,
     required this.scaleAnimation,
     required this.rotateAnimation,
-    required this.perspective,
+    this.currentUserName,
+    this.roomModel,
   }) : super(key: key);
+
+  static Matrix4 _pmat(double pv) {
+    return Matrix4(
+      1.0, 0.0, 0.0, 0.0,
+      0.0, 1.0, 0.0, 0.0,
+      0.0, 0.0, 1.0, pv * 0.001,
+      0.0, 0.0, 0.0, 1.0,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +144,15 @@ class Board extends StatelessWidget {
           height: MediaQuery.of(context).size.height*0.9,
           child: LayoutBuilder(
             builder: (context,constraints){
-              return PuzzleBoard(
+              return isOtherPlayerBoard?OtherPlayerBoard(
+                roomModel: roomModel!,
+                otherPlayerName: roomModel!.users.firstWhere((element) => element!=currentUserName),
+                maxRows: maxRows,
+                tilePadding: tilePadding,
+              ):PuzzleBoard(
+                roomModel: roomModel,
+                currentUserName: currentUserName,
+                tilePadding: tilePadding,
                 maxRows: maxRows,
                 key: puzzleKey,
                 size: constraints.biggest,

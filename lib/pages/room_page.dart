@@ -1,55 +1,73 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_puzzle_hackathon/classes/collection_references.dart';
+import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
 import 'package:flutter_puzzle_hackathon/classes/room_services.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
-import 'package:flutter_puzzle_hackathon/routing/fluro_routing.dart';
+import 'package:flutter_puzzle_hackathon/pages/game.dart';
 
 class RoomPage extends StatefulWidget {
-  const RoomPage({Key? key}) : super(key: key);
+  final String currentUserName;
+  String roomId;
+  RoomModel? roomModel;
+
+  RoomPage({
+    Key? key,
+    required this.currentUserName,
+    this.roomId=' ',
+    this.roomModel,
+  }) : super(key: key);
 
   @override
   _RoomPageState createState() => _RoomPageState();
 }
 
 class _RoomPageState extends State<RoomPage> {
-  bool loading=true;
-  String roomId=' ';
-  double _puzzleSize=5.0;
-  late String currentUserName;
+  bool navigated=false;
+  double _puzzleSize=4.0;
   RoomModel? roomModel;
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_){
-      Object? argument=ModalRoute.of(context)!.settings.arguments;
-      if(argument!=null){
-        currentUserName= argument as String;
+    roomModel=widget.roomModel;
+    CollectionReferences.room.doc(widget.roomId).snapshots().listen((doc) {
+      if(doc.exists){
+        setState(() {
+          roomModel=RoomModel.fromDocument(doc);
+        });
+        if(!navigated&&roomModel!.gameStarted){
+          navigated=true;
+          navigateToGame();
+        }
       }
-      setState(() {
-        loading=false;
-      });
     });
     super.initState();
   }
 
   void createRoom()async{
-    roomId=await RoomServices.createRoom(currentUserName,_puzzleSize.toInt());
+    widget.roomId=await RoomServices.createRoom(widget.currentUserName,_puzzleSize.toInt());
     setState(() {
 
     });
   }
 
-  void startGame(){
+  void navigateToGame(){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>MyGame(currentUserName: widget.currentUserName, roomModel: roomModel!)));
+  }
+
+  void startGame()async{
     if(roomModel!=null&&roomModel!.users.length==2){
-      FluroRouting.navigateToMultiPlayerGame(context: context,roomModel: roomModel!);
+      await RoomServices.startGame(widget.roomId);
+      navigateToGame();
+    } else {
+      Dialogs.showToast('2 players required to start the game');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: loading?const Center(child: CircularProgressIndicator(),):Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
@@ -72,29 +90,30 @@ class _RoomPageState extends State<RoomPage> {
               ),
             ],
           ),
-          roomId==' '?ElevatedButton(
+          Row(
+            children: [
+              const Text("Room Id:- "),
+              if(widget.roomId!=' ')
+                Text(widget.roomId),
+              if(widget.roomId!=' ')
+                IconButton(
+                  onPressed: ()=>Clipboard.setData(ClipboardData(text: widget.roomId)),
+                  icon: const Icon(Icons.copy),
+                ),
+            ],
+          ),
+          widget.roomId==' '?ElevatedButton(
             onPressed: ()=>createRoom(),
             child: const Text("Create Room"),
-          ):roomModel!=null&&roomModel!.users.first==currentUserName?ElevatedButton(
+          ):roomModel!=null&&roomModel!.users.first==widget.currentUserName?ElevatedButton(
             onPressed: ()=>startGame(),
             child: const Text("Start game"),
           ):const SizedBox(),
           const SizedBox(height: 30,),
           const Text("Joined Players"),
           const SizedBox(height: 20,),
-          StreamBuilder(
-            stream: CollectionReferences.room.doc(roomId).snapshots(),
-            builder: (context,AsyncSnapshot<DocumentSnapshot> snapshot){
-              if(!snapshot.hasData||!snapshot.data!.exists){
-                return const SizedBox();
-              }
-              roomModel=RoomModel.fromDocument(snapshot.data!);
-              if(roomModel!.users.length==2){
-                return Text(roomModel!.users.firstWhere((element) => element!=currentUserName));
-              }
-              return const SizedBox();
-            },
-          ),
+          if(roomModel!=null&&roomModel!.users.length==2)
+            Text(roomModel!.users.firstWhere((element) => element!=widget.currentUserName)),
         ],
       ),
     );
