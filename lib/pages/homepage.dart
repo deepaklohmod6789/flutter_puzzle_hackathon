@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
 import 'package:flutter_puzzle_hackathon/classes/room_services.dart';
+import 'package:flutter_puzzle_hackathon/models/room_arguments.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
 import 'package:flutter_puzzle_hackathon/pages/game.dart';
 import 'package:flutter_puzzle_hackathon/pages/room_page.dart';
@@ -53,16 +54,18 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 20,),
           ElevatedButton(
-            onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>const MyGame())),
+            onPressed: ()=>FluroRouting.navigateToPage(routeName: '/game', context: context),
             child: const Text("Single Player"),
           ),
           const SizedBox(height: 20,),
           ElevatedButton(
             onPressed: (){
               if(nameEditingController.text.trim().isNotEmpty){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>RoomPage(
-                  currentUserName: nameEditingController.text.trim(),
-                )));
+                FluroRouting.navigateToPage(
+                  routeName: '/room',
+                  context: context,
+                  arguments: RoomArguments(currentUserName: nameEditingController.text.trim()),
+                );
               } else {
                 Dialogs.showToast('Enter name to continue');
               }
@@ -78,11 +81,15 @@ class _HomePageState extends State<HomePage> {
                 Dialogs.showToast('Enter room id to continue');
               } else {
                 RoomModel? roomModel=await RoomServices.joinRoom(roomIdEditingController.text.trim(), nameEditingController.text.trim());
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>RoomPage(
-                  currentUserName: nameEditingController.text.trim(),
-                  roomId: roomIdEditingController.text.trim(),
-                  roomModel: roomModel,
-                )));
+                FluroRouting.navigateToPage(
+                  routeName: '/room',
+                  context: context,
+                  arguments: RoomArguments(
+                    currentUserName: nameEditingController.text.trim(),
+                    roomId: roomIdEditingController.text.trim(),
+                    roomModel: roomModel,
+                  ),
+                );
               }
             },
             child: const Text("Join Room"),

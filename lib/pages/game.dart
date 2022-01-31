@@ -1,18 +1,17 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter_puzzle_hackathon/models/game_arguments.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
 import 'package:flutter_puzzle_hackathon/pages/puzzle_board.dart';
 import 'package:flutter_puzzle_hackathon/widgets/other_player_board.dart';
 
 class MyGame extends StatefulWidget {
-  final RoomModel? roomModel;
-  final String? currentUserName;
+  final GameArguments? gameArguments;
 
   const MyGame({
     Key? key,
-    this.roomModel,
-    this.currentUserName,
+    this.gameArguments,
   }) : super(key: key);
 
   @override
@@ -50,23 +49,23 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
   }
 
   void getBoards(){
-    if(widget.roomModel!=null){
+    if(widget.gameArguments!=null){
       boards.add(Board(
-        maxRows: widget.roomModel!.puzzleSize,
+        maxRows: widget.gameArguments!.roomModel.puzzleSize,
         tilePadding: tilePadding,
         isOtherPlayerBoard: true,
-        roomModel: widget.roomModel,
-        currentUserName: widget.currentUserName,
+        roomModel: widget.gameArguments!.roomModel,
+        currentUserName: widget.gameArguments!.currentUserName,
         animationController: animationController,
         scaleAnimation: scaleAnimation,
         rotateAnimation: rotateAnimation,
       ));
       boards.add(Board(
-        maxRows: widget.roomModel!.puzzleSize,
-        currentUserName: widget.currentUserName,
+        maxRows: widget.gameArguments!.roomModel.puzzleSize,
+        currentUserName: widget.gameArguments!.currentUserName,
         tilePadding: tilePadding,
         isOtherPlayerBoard: false,
-        roomModel: widget.roomModel,
+        roomModel: widget.gameArguments!.roomModel,
         puzzleKey: _puzzleKey,
         animationController: animationController,
         scaleAnimation: scaleAnimation,
