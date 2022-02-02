@@ -1,5 +1,6 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_puzzle_hackathon/models/game_arguments.dart';
 import 'package:flutter_puzzle_hackathon/models/room_arguments.dart';
 import 'package:flutter_puzzle_hackathon/pages/game.dart';
@@ -16,6 +17,13 @@ class FluroRouting {
     handlerFunc: (BuildContext? context, Map<String, dynamic> params){
       final Object? args = context!.arguments;
       GameArguments? gameArguments=args as GameArguments?;
+      if(gameArguments==null){
+        gameArguments=GameArguments.fromCookies();
+      } else {
+        if(kIsWeb){
+          GameArguments.saveToCookies(gameArguments);
+        }
+      }
       return MyGame(gameArguments: gameArguments,);
     },
   );
@@ -23,6 +31,13 @@ class FluroRouting {
     handlerFunc: (BuildContext? context, Map<String, dynamic> params){
       final Object? args = context!.arguments;
       RoomArguments? roomArguments=args as RoomArguments?;
+      if(roomArguments==null){
+        roomArguments=RoomArguments.fromCookies();
+      } else {
+        if(kIsWeb){
+          RoomArguments.saveToCookies(roomArguments);
+        }
+      }
       return RoomPage(roomArguments: roomArguments,);
     },
   );

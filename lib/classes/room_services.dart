@@ -48,18 +48,23 @@ class RoomServices{
     return RoomModel.fromDocument(doc);
   }
 
-  static void saveBoardPosition(String roomId, String currentUserName,List<int> board){
+  static void saveBoardPosition(String roomId, String currentUserName,List<int> board,int moves){
     CollectionReferences.room.doc(roomId).collection('players').doc(currentUserName).set({
       'board': board,
+      'moves': moves,
     },SetOptions(merge: true)).catchError((error)=>print(error));
   }
 
-  static Future<List<int>> getBoardPosition(String roomId, String currentUserName)async{
-    List<int> temp=[];
+  static Future<Map<String,dynamic>> getBoardPosition(String roomId, String currentUserName)async{
+    Map<String,dynamic> data={
+      'board':[],
+      'moves':0,
+    };
     DocumentSnapshot doc=await CollectionReferences.room.doc(roomId).collection('players').doc(currentUserName).get();
     if(doc.exists){
-      temp=List.from(doc['board']);
+      data['board']=List.from(doc['board']);
+      data['moves']=doc['moves'];
     }
-    return temp;
+    return data;
   }
 }

@@ -11,6 +11,7 @@ class OtherPlayerBoard extends StatelessWidget {
   final RoomModel roomModel;
   final double tilePadding;
   final int maxRows;
+  final ValueNotifier<int> movesPlayed;
 
   const OtherPlayerBoard({
     Key? key,
@@ -18,6 +19,7 @@ class OtherPlayerBoard extends StatelessWidget {
     required this.otherPlayerName,
     required this.maxRows,
     required this.tilePadding,
+    required this.movesPlayed,
   }) : super(key: key);
 
   @override
@@ -29,6 +31,9 @@ class OtherPlayerBoard extends StatelessWidget {
           return EmptyBoardGrid(tilePadding: tilePadding, maxRows: maxRows);
         }
         List<int> board=List.from(snapshot.data!['board']);
+        WidgetsBinding.instance!.addPostFrameCallback((_){
+          movesPlayed.value=snapshot.data!['moves'];
+        });
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),

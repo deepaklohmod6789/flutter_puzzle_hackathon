@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter_puzzle_hackathon/classes/cookie_manager.dart';
 import 'package:flutter_puzzle_hackathon/models/game_arguments.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
 import 'package:flutter_puzzle_hackathon/pages/puzzle_board.dart';
@@ -29,6 +30,7 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
 
   @override
   void initState() {
+    CookieManager.addToCookie('temp', '100');
     animationController=AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -110,6 +112,7 @@ class Board extends StatelessWidget {
   final Matrix4 perspective = _pmat(1.0);
   RoomModel? roomModel;
   String? currentUserName;
+  ValueNotifier<int> movesPlayed=ValueNotifier(0);
 
   Board({
     Key? key,
@@ -135,41 +138,54 @@ class Board extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: AnimatedBuilder(
-        animation: animationController,
-        child: SizedBox(
-          width: MediaQuery.of(context).size.height*0.9,
-          height: MediaQuery.of(context).size.height*0.9,
-          child: LayoutBuilder(
-            builder: (context,constraints){
-              return isOtherPlayerBoard?OtherPlayerBoard(
-                roomModel: roomModel!,
-                otherPlayerName: roomModel!.users.firstWhere((element) => element!=currentUserName),
-                maxRows: maxRows,
-                tilePadding: tilePadding,
-              ):PuzzleBoard(
-                roomModel: roomModel,
-                currentUserName: currentUserName,
-                tilePadding: tilePadding,
-                maxRows: maxRows,
-                key: puzzleKey,
-                size: constraints.biggest,
+    return Column(
+      children: [
+        Center(
+          child: AnimatedBuilder(
+            animation: animationController,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.height*0.9,
+              height: MediaQuery.of(context).size.height*0.9,
+              child: LayoutBuilder(
+                builder: (context,constraints){
+                  return isOtherPlayerBoard?OtherPlayerBoard(
+                    roomModel: roomModel!,
+                    otherPlayerName: roomModel!.users.firstWhere((element) => element!=currentUserName),
+                    maxRows: maxRows,
+                    tilePadding: tilePadding,
+                    movesPlayed: movesPlayed,
+                  ):PuzzleBoard(
+                    roomModel: roomModel,
+                    currentUserName: currentUserName,
+                    tilePadding: tilePadding,
+                    maxRows: maxRows,
+                    key: puzzleKey,
+                    size: constraints.biggest,
+                    movesPlayed: movesPlayed,
+                  );
+                },
+              ),
+            ),
+            builder: (context,child){
+              return Transform(
+                alignment: FractionalOffset.center,
+                transform: perspective.scaled(scaleAnimation.value,scaleAnimation.value,scaleAnimation.value,)
+                  ..rotateX(math.pi - rotateAnimation.value * math.pi / 180)
+                  ..rotateY(-math.pi)
+                  ..rotateZ(-math.pi),
+                child: child,
               );
             },
           ),
         ),
-        builder: (context,child){
-          return Transform(
-            alignment: FractionalOffset.center,
-            transform: perspective.scaled(scaleAnimation.value,scaleAnimation.value,scaleAnimation.value,)
-              ..rotateX(math.pi - rotateAnimation.value * math.pi / 180)
-              ..rotateY(-math.pi)
-              ..rotateZ(-math.pi),
-            child: child,
-          );
-        },
-      ),
+        const SizedBox(height: 10,),
+        ValueListenableBuilder(
+          valueListenable: movesPlayed,
+          builder: (context,child,value) {
+            return Text("Moves played:"+movesPlayed.value.toString());
+          }
+        ),
+      ],
     );
   }
 }

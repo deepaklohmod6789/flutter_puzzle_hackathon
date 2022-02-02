@@ -14,6 +14,7 @@ class PuzzleBoard extends StatefulWidget {
   final int maxRows;
   final double tilePadding;
   final Size size;
+  final ValueNotifier<int> movesPlayed;
   RoomModel? roomModel;
   String? currentUserName;
 
@@ -22,6 +23,7 @@ class PuzzleBoard extends StatefulWidget {
     required this.size,
     required this.maxRows,
     required this.tilePadding,
+    required this.movesPlayed,
     this.roomModel,
     this.currentUserName,
   }) : super(key: key);
@@ -55,8 +57,9 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
   void _getPuzzle()async{
     bool initialIsEmpty=true;
     if(widget.roomModel!=null){
-      List<int> board=await RoomServices.getBoardPosition(widget.roomModel!.roomId, widget.currentUserName!,);
-      initial.addAll(board);
+      Map<String,dynamic> board=await RoomServices.getBoardPosition(widget.roomModel!.roomId, widget.currentUserName!,);
+      initial.addAll(List.from(board['board']));
+      widget.movesPlayed.value=board['moves'];
       if(initial.isNotEmpty){
         initialIsEmpty=false;
       }
@@ -75,10 +78,12 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
 
     }
     centerOffset=Offset((widget.size.width-tiles.first.size.width)/2,(widget.size.height-tiles.first.size.height)/2);
-    initial.shuffle();
-    _checkSolvability();
+    if(initialIsEmpty){
+      initial.shuffle();
+      _checkSolvability();
+    }
     if(!initialIsEmpty&&widget.roomModel!=null){
-      RoomServices.saveBoardPosition(widget.roomModel!.roomId, widget.currentUserName!, initial);
+      RoomServices.saveBoardPosition(widget.roomModel!.roomId, widget.currentUserName!, initial,widget.movesPlayed.value);
     }
     for (int i=0;i<initial.length;i++){
       tiles[i].value=initial[i];
@@ -106,6 +111,7 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
       ZeroTile zeroTile=ZeroTile(currentTile,widget.maxRows,List.from(tiles));
 
       if(zeroTile.isOnLeft()||zeroTile.isOnRight()||zeroTile.isOnUp()||zeroTile.isOnBelow()){
+        widget.movesPlayed.value++;
         double x1=tiles[currentIndex].offset.dx;
         double y1=tiles[currentIndex].offset.dy;
         tiles[currentIndex].offset=tiles[zeroIndex].offset;
@@ -130,7 +136,7 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
     for(Tile tile in orderedTiles){
       board.add(tile.value);
     }
-    RoomServices.saveBoardPosition(widget.roomModel!.roomId, widget.currentUserName!, board);
+    RoomServices.saveBoardPosition(widget.roomModel!.roomId, widget.currentUserName!, board,widget.movesPlayed.value);
   }
 
   void getHint()async{
@@ -155,6 +161,7 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
   void shuffle(){
     if(canTap){
       canTap=false;
+      widget.movesPlayed.value++;
       animationController.forward();
       initial.shuffle();
       _checkSolvability();
