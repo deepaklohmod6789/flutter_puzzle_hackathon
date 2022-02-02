@@ -1,10 +1,9 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
 import 'package:flutter_puzzle_hackathon/classes/room_services.dart';
 import 'package:flutter_puzzle_hackathon/models/room_arguments.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
-import 'package:flutter_puzzle_hackathon/pages/game.dart';
-import 'package:flutter_puzzle_hackathon/pages/room_page.dart';
 import 'package:flutter_puzzle_hackathon/routing/fluro_routing.dart';
 
 class HomePage extends StatefulWidget {
@@ -30,6 +29,16 @@ class _HomePageState extends State<HomePage> {
     nameEditingController.dispose();
     roomIdEditingController.dispose();
     super.dispose();
+  }
+
+  String getRandomString(int length){
+    const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    Random _rnd = Random();
+    return String.fromCharCodes(
+      Iterable.generate(
+        length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length)),
+      ),
+    );
   }
 
   @override

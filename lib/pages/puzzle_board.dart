@@ -108,7 +108,8 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
     if(canTap){
       canTap=false;
       int zeroIndex=tiles.indexWhere((element) => element.value==0);
-      ZeroTile zeroTile=ZeroTile(currentTile,widget.maxRows,List.from(tiles));
+      List<Tile> orderedTiles=Board.orderList(List.from(tiles));
+      ZeroTile zeroTile=ZeroTile(currentTile,widget.maxRows,List.from(orderedTiles));
 
       if(zeroTile.isOnLeft()||zeroTile.isOnRight()||zeroTile.isOnUp()||zeroTile.isOnBelow()){
         widget.movesPlayed.value++;
@@ -116,7 +117,6 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
         double y1=tiles[currentIndex].offset.dy;
         tiles[currentIndex].offset=tiles[zeroIndex].offset;
         tiles[zeroIndex].offset=Offset(x1,y1);
-        List<Tile> orderedTiles=Board.orderList(tiles);
         if(widget.roomModel!=null){
           saveMove(orderedTiles);
         }
@@ -162,6 +162,10 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
     if(canTap){
       canTap=false;
       widget.movesPlayed.value++;
+      List<Tile> orderedTiles=Board.orderList(tiles);
+      if(widget.roomModel!=null){
+        saveMove(orderedTiles);
+      }
       animationController.forward();
       initial.shuffle();
       _checkSolvability();

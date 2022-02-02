@@ -87,8 +87,8 @@ class _RoomPageState extends State<RoomPage> {
                 builder: (context,updateState){
                   return Slider(
                     value: _puzzleSize,
-                    max: 6,
-                    min: 2,
+                    max: 5,
+                    min: 3,
                     onChanged: (double value) {
                       updateState(() {
                         _puzzleSize = value;

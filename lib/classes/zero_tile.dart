@@ -6,13 +6,11 @@ class ZeroTile{
   final List<Tile> tiles;
   late final int currentIndex;
   late final int zeroIndex;
-  List<Tile> orderedTiles=[];
 
   ZeroTile(this.currentTile,this.maxRows,this.tiles){
-    orderedTiles=orderList();
-    Tile zeroTile=orderedTiles.firstWhere((element) => element.value==0);
-    zeroIndex=orderedTiles.indexOf(zeroTile);
-    currentIndex=orderedTiles.indexOf(currentTile);
+    Tile zeroTile=tiles.firstWhere((element) => element.value==0);
+    zeroIndex=tiles.indexOf(zeroTile);
+    currentIndex=tiles.indexOf(currentTile);
   }
 
   bool isOnLeft(){
@@ -31,15 +29,6 @@ class ZeroTile{
 
   bool isOnBelow(){
     return zeroIndex-maxRows==currentIndex;
-  }
-
-  ///to reorder list based on offset
-  List<Tile> orderList(){
-    List<Tile> tempXOrdered=[];
-    tempXOrdered.addAll(tiles);
-    tempXOrdered.sort((a, b) => a.offset.dx.compareTo(b.offset.dx));
-    tempXOrdered.sort((a, b) => a.offset.dy.compareTo(b.offset.dy));
-    return tempXOrdered;
   }
 
 }
