@@ -4,17 +4,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_puzzle_hackathon/classes/cookie_manager.dart';
 
 class RoomModel{
-  late final String roomId;
-  late final int puzzleSize;
-  late final bool gameStarted;
-  late final List<String> users;
-  late final DateTime roomCreatedTimeStamp;
+  final String roomId;
+  final int puzzleSize;
+  final bool gameStarted;
+  final List<String> userNames;
+  final List<String> userIds;
+  final DateTime roomCreatedTimeStamp;
 
   RoomModel({
     required this.roomId,
     required this.puzzleSize,
     required this.gameStarted,
-    required this.users,
+    required this.userNames,
+    required this.userIds,
     required this.roomCreatedTimeStamp,
   });
 
@@ -23,7 +25,8 @@ class RoomModel{
       roomId: doc['roomId'],
       puzzleSize: doc['puzzleSize'],
       gameStarted: doc['gameStarted'],
-      users: List.from(doc['users']),
+      userNames: List.from(doc['userNames']),
+      userIds: List.from(doc['userIds']),
       roomCreatedTimeStamp: DateTime.fromMillisecondsSinceEpoch(doc['roomCreatedTimeStamp'].seconds * 1000),
     );
   }
@@ -32,17 +35,19 @@ class RoomModel{
     String roomId=CookieManager.getCookie('roomId');
     String puzzleSize=CookieManager.getCookie('puzzleSize');
     String gameStarted=CookieManager.getCookie('gameStarted');
-    String users=CookieManager.getCookie('users');
+    String userNames=CookieManager.getCookie('userNames');
+    String userIds=CookieManager.getCookie('userIds');
     String roomCreatedTimeStamp=CookieManager.getCookie('roomCreatedTimeStamp');
     RoomModel? roomModel;
-    if(puzzleSize==''||gameStarted==''||users==''||roomCreatedTimeStamp==''){
+    if(puzzleSize==''||gameStarted==''||userNames==''||roomCreatedTimeStamp==''||userIds==''){
       roomModel=null;
     } else {
       roomModel=RoomModel(
         roomId: roomId,
         puzzleSize: int.parse(puzzleSize),
         gameStarted: gameStarted=='true',
-        users: (jsonDecode(users)as List<dynamic>).cast<String>(),
+        userNames: (jsonDecode(userNames)as List<dynamic>).cast<String>(),
+        userIds: (jsonDecode(userIds)as List<dynamic>).cast<String>(),
         roomCreatedTimeStamp: DateTime.parse(roomCreatedTimeStamp),
       );
     }
@@ -53,7 +58,8 @@ class RoomModel{
     CookieManager.addToCookie('roomId', roomModel.roomId);
     CookieManager.addToCookie('puzzleSize', roomModel.puzzleSize.toString());
     CookieManager.addToCookie('gameStarted', roomModel.gameStarted.toString());
-    CookieManager.addToCookie('users', jsonEncode(roomModel.users));
+    CookieManager.addToCookie('userNames', jsonEncode(roomModel.userNames));
+    CookieManager.addToCookie('userIds', jsonEncode(roomModel.userIds));
     CookieManager.addToCookie('roomCreatedTimeStamp', roomModel.roomCreatedTimeStamp.toString());
   }
 

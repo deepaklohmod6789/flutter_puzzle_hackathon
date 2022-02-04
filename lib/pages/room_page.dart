@@ -65,7 +65,7 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   void startGame()async{
-    if(roomModel!=null&&roomModel!.users.length==2){
+    if(roomModel!=null&&roomModel!.userNames.length==2){
       await RoomServices.startGame(widget.roomArguments!.roomId);
       navigateToGame();
     } else {
@@ -114,15 +114,15 @@ class _RoomPageState extends State<RoomPage> {
           widget.roomArguments!.roomId==' '?ElevatedButton(
             onPressed: ()=>createRoom(),
             child: const Text("Create Room"),
-          ):roomModel!=null&&roomModel!.users.first==widget.roomArguments!.currentUserName?ElevatedButton(
+          ):roomModel!=null&&roomModel!.userNames.first==widget.roomArguments!.currentUserName?ElevatedButton(
             onPressed: ()=>startGame(),
             child: const Text("Start game"),
           ):const SizedBox(),
           const SizedBox(height: 30,),
           const Text("Joined Players"),
           const SizedBox(height: 20,),
-          if(roomModel!=null&&roomModel!.users.length==2)
-            Text(roomModel!.users.firstWhere((element) => element!=widget.roomArguments!.currentUserName)),
+          if(roomModel!=null&&roomModel!.userNames.length==2)
+            Text(roomModel!.userNames.firstWhere((element) => element!=widget.roomArguments!.currentUserName)),
         ],
       ),
     );

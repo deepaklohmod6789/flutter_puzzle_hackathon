@@ -1,7 +1,7 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
 import 'package:flutter_puzzle_hackathon/classes/room_services.dart';
+import 'package:flutter_puzzle_hackathon/main.dart';
 import 'package:flutter_puzzle_hackathon/models/room_arguments.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
 import 'package:flutter_puzzle_hackathon/routing/fluro_routing.dart';
@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     nameEditingController=TextEditingController();
     roomIdEditingController=TextEditingController();
+    nameEditingController.text=currentUser.currentUserName;
     super.initState();
   }
 
@@ -29,16 +30,6 @@ class _HomePageState extends State<HomePage> {
     nameEditingController.dispose();
     roomIdEditingController.dispose();
     super.dispose();
-  }
-
-  String getRandomString(int length){
-    const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    Random _rnd = Random();
-    return String.fromCharCodes(
-      Iterable.generate(
-        length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length)),
-      ),
-    );
   }
 
   @override
@@ -70,6 +61,7 @@ class _HomePageState extends State<HomePage> {
           ElevatedButton(
             onPressed: (){
               if(nameEditingController.text.trim().isNotEmpty){
+                currentUser.currentUserName=nameEditingController.text.trim();
                 FluroRouting.navigateToPage(
                   routeName: '/room',
                   context: context,
@@ -89,6 +81,7 @@ class _HomePageState extends State<HomePage> {
               } else if(roomIdEditingController.text.trim().isEmpty){
                 Dialogs.showToast('Enter room id to continue');
               } else {
+                currentUser.currentUserName=nameEditingController.text.trim();
                 RoomModel? roomModel=await RoomServices.joinRoom(roomIdEditingController.text.trim(), nameEditingController.text.trim());
                 FluroRouting.navigateToPage(
                   routeName: '/room',

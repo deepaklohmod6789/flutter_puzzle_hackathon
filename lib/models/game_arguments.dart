@@ -19,7 +19,7 @@ class GameArguments{
   }
 
   static void saveToCookies(GameArguments gameArguments){
-    CookieManager.addToCookie('currentUserName', gameArguments.currentUserName);
+    CookieManager.addCookieForAYear('currentUserName', gameArguments.currentUserName);
     RoomModel.saveToCookies(gameArguments.roomModel);
   }
 

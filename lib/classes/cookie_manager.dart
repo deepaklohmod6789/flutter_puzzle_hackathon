@@ -7,6 +7,11 @@ class CookieManager {
     html.document.cookie = "$key=$value;max-age=$cookieExpireTimeInSeconds; path=/;";
   }
 
+  static addCookieForAYear(String key, String value) {
+    const String cookieExpireTimeInSeconds='31536000';//1 year
+    html.document.cookie = "$key=$value;max-age=$cookieExpireTimeInSeconds; path=/;";
+  }
+
   static String getCookie(String key) {
     String? cookies = html.document.cookie;
     String matchVal = "";

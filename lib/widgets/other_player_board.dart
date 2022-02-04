@@ -7,7 +7,7 @@ import 'package:flutter_puzzle_hackathon/models/room_model.dart';
 import 'package:flutter_puzzle_hackathon/widgets/empty_board_grid.dart';
 
 class OtherPlayerBoard extends StatelessWidget {
-  final String otherPlayerName;
+  final String otherPlayerId;
   final RoomModel roomModel;
   final double tilePadding;
   final int maxRows;
@@ -16,7 +16,7 @@ class OtherPlayerBoard extends StatelessWidget {
   const OtherPlayerBoard({
     Key? key,
     required this.roomModel,
-    required this.otherPlayerName,
+    required this.otherPlayerId,
     required this.maxRows,
     required this.tilePadding,
     required this.movesPlayed,
@@ -25,7 +25,7 @@ class OtherPlayerBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: CollectionReferences.room.doc(roomModel.roomId).collection('players').doc(otherPlayerName).snapshots(),
+      stream: CollectionReferences.room.doc(roomModel.roomId).collection('players').doc(otherPlayerId).snapshots(),
       builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot){
         if(!snapshot.hasData||!snapshot.data!.exists){
           return EmptyBoardGrid(tilePadding: tilePadding, maxRows: maxRows);

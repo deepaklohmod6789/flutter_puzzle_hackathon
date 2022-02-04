@@ -57,7 +57,7 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
   void _getPuzzle()async{
     bool initialIsEmpty=true;
     if(widget.roomModel!=null){
-      Map<String,dynamic> board=await RoomServices.getBoardPosition(widget.roomModel!.roomId, widget.currentUserName!,);
+      Map<String,dynamic> board=await RoomServices.getBoardPosition(widget.roomModel!.roomId,);
       initial.addAll(List.from(board['board']));
       widget.movesPlayed.value=board['moves'];
       if(initial.isNotEmpty){
@@ -82,8 +82,8 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
       initial.shuffle();
       _checkSolvability();
     }
-    if(!initialIsEmpty&&widget.roomModel!=null){
-      RoomServices.saveBoardPosition(widget.roomModel!.roomId, widget.currentUserName!, initial,widget.movesPlayed.value);
+    if(initialIsEmpty&&widget.roomModel!=null){
+      RoomServices.saveBoardPosition(widget.roomModel!.roomId, initial,widget.movesPlayed.value);
     }
     for (int i=0;i<initial.length;i++){
       tiles[i].value=initial[i];
@@ -118,7 +118,8 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
         tiles[currentIndex].offset=tiles[zeroIndex].offset;
         tiles[zeroIndex].offset=Offset(x1,y1);
         if(widget.roomModel!=null){
-          saveMove(orderedTiles);
+          List<Tile> orderedTilesAfterPlayingMove=Board.orderList(List.from(tiles));
+          saveMove(orderedTilesAfterPlayingMove);
         }
         if(Board.isSolved(orderedTiles, widget.maxRows)){
           print('solved');
@@ -136,7 +137,7 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
     for(Tile tile in orderedTiles){
       board.add(tile.value);
     }
-    RoomServices.saveBoardPosition(widget.roomModel!.roomId, widget.currentUserName!, board,widget.movesPlayed.value);
+    RoomServices.saveBoardPosition(widget.roomModel!.roomId, board,widget.movesPlayed.value);
   }
 
   void getHint()async{

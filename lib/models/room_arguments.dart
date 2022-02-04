@@ -21,7 +21,7 @@ class RoomArguments{
   }
 
   static void saveToCookies(RoomArguments roomArguments){
-    CookieManager.addToCookie('currentUserName', roomArguments.currentUserName);
+    CookieManager.addCookieForAYear('currentUserName', roomArguments.currentUserName);
     CookieManager.addToCookie('roomId', roomArguments.roomId);
     if(roomArguments.roomModel!=null){
       RoomModel.saveToCookies(roomArguments.roomModel!);

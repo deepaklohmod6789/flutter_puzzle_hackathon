@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:flutter_puzzle_hackathon/classes/cookie_manager.dart';
+import 'package:flutter_puzzle_hackathon/main.dart';
 import 'package:flutter_puzzle_hackathon/models/game_arguments.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
 import 'package:flutter_puzzle_hackathon/pages/puzzle_board.dart';
@@ -30,7 +30,6 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
 
   @override
   void initState() {
-    CookieManager.addToCookie('temp', '100');
     animationController=AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -150,7 +149,7 @@ class Board extends StatelessWidget {
                 builder: (context,constraints){
                   return isOtherPlayerBoard?OtherPlayerBoard(
                     roomModel: roomModel!,
-                    otherPlayerName: roomModel!.users.firstWhere((element) => element!=currentUserName),
+                    otherPlayerId: roomModel!.userIds.firstWhere((element) => element!=currentUser.userId),
                     maxRows: maxRows,
                     tilePadding: tilePadding,
                     movesPlayed: movesPlayed,

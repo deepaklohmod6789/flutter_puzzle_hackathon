@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_puzzle_hackathon/classes/collection_references.dart';
 import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
+import 'package:flutter_puzzle_hackathon/main.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
 
 class RoomServices{
@@ -10,7 +11,8 @@ class RoomServices{
     await CollectionReferences.room.doc(roomId).set({
       'roomId': roomId,
       'puzzleSize': puzzleSize,
-      'users': [currentUserName],
+      'userNames': [currentUserName],
+      'userIds':[currentUser.userId],
       'gameStarted': false,
       'roomCreatedTimeStamp': FieldValue.serverTimestamp(),
     });
@@ -21,7 +23,8 @@ class RoomServices{
     DocumentSnapshot doc=await CollectionReferences.room.doc(roomId).get();
     if(doc.exists){
       await CollectionReferences.room.doc(roomId).update({
-        'users': FieldValue.arrayUnion([currentUserName]),
+        'userNames': FieldValue.arrayUnion([currentUserName]),
+        'userIds': FieldValue.arrayUnion([currentUser.userId]),
       }).catchError((error){
         if(error.code=='permission-denied'){
           Dialogs.showToast('Room is full');
@@ -48,19 +51,19 @@ class RoomServices{
     return RoomModel.fromDocument(doc);
   }
 
-  static void saveBoardPosition(String roomId, String currentUserName,List<int> board,int moves){
-    CollectionReferences.room.doc(roomId).collection('players').doc(currentUserName).set({
+  static void saveBoardPosition(String roomId,List<int> board,int moves){
+    CollectionReferences.room.doc(roomId).collection('players').doc(currentUser.userId).set({
       'board': board,
       'moves': moves,
-    },SetOptions(merge: true)).catchError((error)=>print(error));
+    }).catchError((error)=>print(error));
   }
 
-  static Future<Map<String,dynamic>> getBoardPosition(String roomId, String currentUserName)async{
+  static Future<Map<String,dynamic>> getBoardPosition(String roomId,)async{
     Map<String,dynamic> data={
       'board':[],
       'moves':0,
     };
-    DocumentSnapshot doc=await CollectionReferences.room.doc(roomId).collection('players').doc(currentUserName).get();
+    DocumentSnapshot doc=await CollectionReferences.room.doc(roomId).collection('players').doc(currentUser.userId).get();
     if(doc.exists){
       data['board']=List.from(doc['board']);
       data['moves']=doc['moves'];
