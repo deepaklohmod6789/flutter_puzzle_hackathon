@@ -149,7 +149,7 @@ class Board extends StatelessWidget {
                 builder: (context,constraints){
                   return isOtherPlayerBoard?OtherPlayerBoard(
                     roomModel: roomModel!,
-                    otherPlayerId: roomModel!.userIds.firstWhere((element) => element!=currentUser.userId),
+                    otherPlayerId: roomModel!.roomOwnerId==currentUser.userId?roomModel!.otherPlayerId:roomModel!.roomOwnerId,
                     maxRows: maxRows,
                     tilePadding: tilePadding,
                     movesPlayed: movesPlayed,

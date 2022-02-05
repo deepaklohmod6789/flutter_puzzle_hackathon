@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_puzzle_hackathon/classes/collection_references.dart';
+import 'package:flutter_puzzle_hackathon/classes/cookie_manager.dart';
 import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
 import 'package:flutter_puzzle_hackathon/classes/room_services.dart';
+import 'package:flutter_puzzle_hackathon/main.dart';
 import 'package:flutter_puzzle_hackathon/models/game_arguments.dart';
 import 'package:flutter_puzzle_hackathon/models/room_arguments.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
@@ -34,23 +36,29 @@ class _RoomPageState extends State<RoomPage> {
     });
     if(widget.roomArguments!=null){
       roomModel=widget.roomArguments!.roomModel;
-      CollectionReferences.room.doc(widget.roomArguments!.roomId).snapshots().listen((doc) {
-        if(doc.exists){
-          setState(() {
-            roomModel=RoomModel.fromDocument(doc);
-          });
-          if(!navigated&&roomModel!.gameStarted){
-            navigated=true;
-            navigateToGame();
-          }
-        }
-      });
+      addRoomListener();
     }
     super.initState();
   }
 
+  void addRoomListener(){
+    CollectionReferences.room.doc(widget.roomArguments!.roomId).snapshots().listen((doc) {
+      if(doc.exists){
+        setState(() {
+          roomModel=RoomModel.fromDocument(doc);
+        });
+        if(!navigated&&roomModel!.gameStarted){
+          navigated=true;
+          navigateToGame();
+        }
+      }
+    });
+  }
+
   void createRoom()async{
     widget.roomArguments!.roomId=await RoomServices.createRoom(widget.roomArguments!.currentUserName,_puzzleSize.toInt());
+    CookieManager.addToCookie('roomId', widget.roomArguments!.roomId);
+    addRoomListener();
     setState(() {
 
     });
@@ -65,8 +73,8 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   void startGame()async{
-    if(roomModel!=null&&roomModel!.userNames.length==2){
-      await RoomServices.startGame(widget.roomArguments!.roomId);
+    if(roomModel!=null&&roomModel!.otherPlayerId!=''){
+      await RoomServices.startGame(widget.roomArguments!.roomId,_puzzleSize.toInt());
       navigateToGame();
     } else {
       Dialogs.showToast('2 players required to start the game');
@@ -114,15 +122,15 @@ class _RoomPageState extends State<RoomPage> {
           widget.roomArguments!.roomId==' '?ElevatedButton(
             onPressed: ()=>createRoom(),
             child: const Text("Create Room"),
-          ):roomModel!=null&&roomModel!.userNames.first==widget.roomArguments!.currentUserName?ElevatedButton(
+          ):roomModel!=null&&roomModel!.roomOwnerId==currentUser.userId?ElevatedButton(
             onPressed: ()=>startGame(),
             child: const Text("Start game"),
           ):const SizedBox(),
           const SizedBox(height: 30,),
           const Text("Joined Players"),
           const SizedBox(height: 20,),
-          if(roomModel!=null&&roomModel!.userNames.length==2)
-            Text(roomModel!.userNames.firstWhere((element) => element!=widget.roomArguments!.currentUserName)),
+          if(roomModel!=null&&roomModel!.otherPlayerId!='')
+            Text(roomModel!.roomOwnerId==currentUser.userId?roomModel!.otherPlayerName:roomModel!.roomOwnerName),
         ],
       ),
     );
