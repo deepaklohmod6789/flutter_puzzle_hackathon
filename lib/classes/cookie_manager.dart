@@ -12,6 +12,20 @@ class CookieManager {
     html.document.cookie = "$key=$value;max-age=$cookieExpireTimeInSeconds; path=/;";
   }
 
+  static deleteMultiplayerGameCookies(){
+    String? cookies = html.document.cookie;
+    if(cookies!=null){
+      List<String> listValues = cookies.isNotEmpty ? cookies.split(";") : [];
+      for (int i = 0; i < listValues.length; i++) {
+        List<String> map = listValues[i].split("=");
+        String name = map[0].trim();
+        if(name!='currentUserName'){
+          cookies = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        }
+      }
+    }
+  }
+
   static String getCookie(String key) {
     String? cookies = html.document.cookie;
     String matchVal = "";

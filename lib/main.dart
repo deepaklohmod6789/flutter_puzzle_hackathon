@@ -34,10 +34,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Puzzle Buster',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: 'Raleway'
       ),
       initialRoute: '/home',
       onGenerateRoute: FluroRouting.router.generator,

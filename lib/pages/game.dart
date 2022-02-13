@@ -88,6 +88,19 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        iconTheme: const IconThemeData(color: Colors.black),
+        actions: [
+          IconButton(
+            onPressed: ()=>_puzzleKey.currentState!.getHint(),
+            icon: const Icon(Icons.help_outline_rounded),
+          ),
+        ],
+      ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: boards,

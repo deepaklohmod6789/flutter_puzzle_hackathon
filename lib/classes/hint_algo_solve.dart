@@ -32,7 +32,6 @@ List<String> getMoves(Solve solve){
   solve.open.add(node);
 
   while (true){
-    print('1');
     Node current=solve.open[0];
     if(current.lastMove!=null){
       moves.add(current.lastMove!);
