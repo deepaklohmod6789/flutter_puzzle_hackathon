@@ -40,62 +40,41 @@ class _LeaderBoardState extends State<LeaderBoard> {
   Widget build(BuildContext context) {
     return loading? const Center(child: CircularProgressIndicator(),):LayoutBuilder(
       builder: (context,constraints){
-        return Responsive(
-          mobile: SizedBox(
-            height: Responsive.isDesktop(context)?constraints.biggest.height*0.7:constraints.biggest.width*0.75,
-            child: Stack(
-              alignment: Alignment.center,
-              children: List.generate(leaderBoardModels.length, (index){
-                return Dismissible(
-                  key: UniqueKey(),
-                  confirmDismiss: (direction)async{
-                    if(leaderBoardModels.length>1){
-                      setState(() {
-                        leaderBoardModels.removeAt(index);
-                      });
-                      return true;
-                    }
-                    return false;
-                  },
-                  child: RotationTransition(
-                    turns: AlwaysStoppedAnimation(angles[index%angles.length]),
-                    child: LeaderBoardCard(leaderBoardModel: leaderBoardModels[index],),
-                  ),
-                );
-              }),
-            ),
+        return Responsive.isDesktop(context)?SizedBox(
+          height: Responsive.isDesktop(context)?constraints.biggest.height*0.7:constraints.biggest.width*0.75,
+          child: Stack(
+            alignment: Alignment.center,
+            children: List.generate(leaderBoardModels.length, (index){
+              return Dismissible(
+                key: UniqueKey(),
+                confirmDismiss: (direction)async{
+                  if(leaderBoardModels.length>1){
+                    setState(() {
+                      leaderBoardModels.removeAt(index);
+                    });
+                    return true;
+                  }
+                  return false;
+                },
+                child: RotationTransition(
+                  turns: AlwaysStoppedAnimation(angles[index%angles.length]),
+                  child: LeaderBoardCard(leaderBoardModel: leaderBoardModels[index],),
+                ),
+              );
+            }),
           ),
-          tablet: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: leaderBoardModels.length,
-            padding: const EdgeInsets.all(30),
-            separatorBuilder: (context,index)=>const SizedBox(width: 30,),
-            itemBuilder: (context,index)=>LeaderBoardCard(leaderBoardModel: leaderBoardModels[index]),
-          ),
-          desktop: SizedBox(
-            height: Responsive.isDesktop(context)?constraints.biggest.height*0.7:constraints.biggest.width*0.75,
-            child: Stack(
-              alignment: Alignment.center,
-              children: List.generate(leaderBoardModels.length, (index){
-                return Dismissible(
-                  key: UniqueKey(),
-                  confirmDismiss: (direction)async{
-                    if(leaderBoardModels.length>1){
-                      setState(() {
-                        leaderBoardModels.removeAt(index);
-                      });
-                      return true;
-                    }
-                    return false;
-                  },
-                  child: RotationTransition(
-                    turns: AlwaysStoppedAnimation(angles[index%angles.length]),
-                    child: LeaderBoardCard(leaderBoardModel: leaderBoardModels[index],),
-                  ),
-                );
-              }),
-            ),
-          ),
+        ):Responsive.isTablet(context)?ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: leaderBoardModels.length,
+          padding: const EdgeInsets.all(30),
+          separatorBuilder: (context,index)=>const SizedBox(width: 30,),
+          itemBuilder: (context,index)=>LeaderBoardCard(leaderBoardModel: leaderBoardModels[index]),
+        ):ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: leaderBoardModels.length,
+          padding: const EdgeInsets.all(10),
+          separatorBuilder: (context,index)=>const SizedBox(width: 10,),
+          itemBuilder: (context,index)=>LeaderBoardCard(leaderBoardModel: leaderBoardModels[index]),
         );
       },
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_puzzle_hackathon/models/leaderboard_model.dart';
+import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 
 class LeaderBoardCard extends StatelessWidget {
   final LeaderBoardModel leaderBoardModel;
@@ -42,6 +43,9 @@ class LeaderBoardCard extends StatelessWidget {
               fit: BoxFit.fitWidth,
               child: Text(
                 leaderBoardModel.username,
+                style: TextStyle(
+                  fontSize: Responsive.isMobile(context)?15:null,
+                ),
               ),
             ),
             const Spacer(),
@@ -50,22 +54,22 @@ class LeaderBoardCard extends StatelessWidget {
               children: [
                 Text(
                   leaderBoardModel.timeInSeconds.toString(),
-                  style: const TextStyle(
-                    fontSize: 28,
+                  style: TextStyle(
+                    fontSize: Responsive.isMobile(context)?19:28,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 Text(
                   leaderBoardModel.rank.toString(),
-                  style: const TextStyle(
-                    fontSize: 28,
+                  style: TextStyle(
+                    fontSize: Responsive.isMobile(context)?19:28,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 Text(
                   leaderBoardModel.score.toString(),
-                  style: const TextStyle(
-                    fontSize: 28,
+                  style: TextStyle(
+                    fontSize: Responsive.isMobile(context)?19:28,
                   ),
                   textAlign: TextAlign.center,
                 ),
