@@ -22,7 +22,7 @@ Future<void> main() async{
   User? user= authServices.getCurrentUser();
   user ??= await authServices.signIn();
   String userName=CookieManager.getCookie('currentUserName');
-  userName==""?'John':userName;
+  userName=userName==""?'John':userName;
   currentUser=UserModel(userId: user!.uid, currentUserName: userName);
 
   runApp(const MyApp());
@@ -38,7 +38,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        fontFamily: 'Raleway'
+        fontFamily: 'Raleway',
+        scrollbarTheme: const ScrollbarThemeData().copyWith(
+          thumbColor: MaterialStateProperty.all(Colors.white),
+        ),
       ),
       initialRoute: '/home',
       onGenerateRoute: FluroRouting.router.generator,

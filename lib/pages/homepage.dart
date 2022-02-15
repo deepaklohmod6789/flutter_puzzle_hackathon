@@ -23,6 +23,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool isEndDrawerOpen=false;
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
   late TextEditingController nameEditingController;
   late TextEditingController roomIdEditingController;
 
@@ -141,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                   textAlign: TextAlign.justify,
                 ),
                 TextButton.icon(
-                  onPressed: (){},
+                  onPressed: ()=>_key.currentState!.openEndDrawer(),
                   label: const Icon(Icons.arrow_forward_ios_outlined,color: Colors.white,),
                   icon: Text(
                     "play now",
@@ -174,106 +176,182 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _key,
       backgroundColor: Colors.black,
+      endDrawerEnableOpenDragGesture: false,
+      drawerScrimColor: Colors.transparent,
       onEndDrawerChanged: (bool isOpened){
-
+        setState(() {
+          isEndDrawerOpen=isOpened;
+        });
       },
-      endDrawer: const EndDrawer(),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background.jpg'),
-            fit: BoxFit.cover,
+      endDrawer: SizedBox(
+        width: MediaQuery.of(context).size.width*0.25,
+        child: Theme(
+          data: Theme.of(context).copyWith(canvasColor: Themes.bgColor,),
+          child: const Drawer(
+            child: EndDrawer(),
           ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            const SideBar(),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: Responsive.isDesktop(context)?20:30,
-                    color: Colors.black,
-                    child: Marquee(
-                      blankSpace: 5,
-                      text: 'There once was a boy who told this story about a boy: "',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: Responsive.isDesktop(context)?13:20,
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:20.0),
-                      child: FittedBox(
-                        fit: BoxFit.fitWidth,
-                        child: Text(
-                          'PUZZLE BUSTER',
-                          style: TextStyle(
-                            fontSize: 150,
-                            fontFamily: 'BigSpace',
-                            letterSpacing: 5,
-                            decorationStyle: TextDecorationStyle.wavy,
-                            foreground: Paint()
-                              ..style = PaintingStyle.stroke
-                              ..strokeCap = StrokeCap.round
-                              ..strokeJoin = StrokeJoin.round
-                              ..strokeWidth = 2.5
-                              ..color = Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: Responsive.isDesktop(context)?0:10,),
-                  Expanded(
-                    child: Responsive.isDesktop(context)?Row(
-                      children: [
-                        Expanded(
-                          flex: Responsive.isDesktop(context)?1:3,
-                          child: content(),
-                        ),
-                        Expanded(
-                          flex: Responsive.isDesktop(context)?1:2,
-                          child: const LeaderBoard(),
-                        ),
-                      ],
-                    ):Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 5,
-                          child: content(),
-                        ),
-                        const Expanded(
-                          flex: 3,
-                          child: LeaderBoard(),
-                        ),
-                        Responsive.isDesktop(context)?const SizedBox():Padding(
-                          padding: const EdgeInsets.fromLTRB(30,20,0,30),
-                          child: Text(
-                            "Version "+GameVersion.getCurrentVersion(),
-                            style: const TextStyle(
-                              fontSize: 24,
-                              color: Color(0xb5ffffff),
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+      ),
+      body: Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/background.jpg'),
+                fit: BoxFit.cover,
               ),
             ),
-          ],
-        ),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const SideBar(),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: Responsive.isDesktop(context)?20:30,
+                        color: Colors.black,
+                        child: Marquee(
+                          blankSpace: 5,
+                          text: 'There once was a boy who told this story about a boy: "',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: Responsive.isDesktop(context)?13:20,
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal:20.0),
+                          child: FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: Text(
+                              'PUZZLE BUSTER',
+                              style: TextStyle(
+                                fontSize: 150,
+                                fontFamily: 'BigSpace',
+                                letterSpacing: 5,
+                                decorationStyle: TextDecorationStyle.wavy,
+                                foreground: Paint()
+                                  ..style = PaintingStyle.stroke
+                                  ..strokeCap = StrokeCap.round
+                                  ..strokeJoin = StrokeJoin.round
+                                  ..strokeWidth = 2.5
+                                  ..color = Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: Responsive.isDesktop(context)?0:10,),
+                      Expanded(
+                        child: Responsive.isDesktop(context)?Row(
+                          children: [
+                            Expanded(
+                              flex: Responsive.isDesktop(context)?1:3,
+                              child: content(),
+                            ),
+                            Expanded(
+                              flex: Responsive.isDesktop(context)?1:2,
+                              child: const LeaderBoard(),
+                            ),
+                          ],
+                        ):Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 5,
+                              child: content(),
+                            ),
+                            const Expanded(
+                              flex: 3,
+                              child: LeaderBoard(),
+                            ),
+                            Responsive.isDesktop(context)?const SizedBox():Padding(
+                              padding: const EdgeInsets.fromLTRB(30,20,0,30),
+                              child: Text(
+                                "Version "+GameVersion.getCurrentVersion(),
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  color: Color(0xb5ffffff),
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          isEndDrawerOpen?Container(
+            width: MediaQuery.of(context).size.width*0.75,
+            height: double.infinity,
+            color: const Color(0xe0000000),
+            child: Row(
+              children: [
+                const Expanded(
+                  flex: 1,
+                  child: SizedBox(),
+                ),
+                Expanded(
+                  flex: 4,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Spacer(),
+                      const Spacer(),
+                      const Text(
+                        'How to play?',
+                        style: TextStyle(
+                          fontFamily: 'Raleway',
+                          fontSize: 35,
+                          color: Themes.primaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 30,),
+                      const Text(
+                        'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. ',
+                        style: TextStyle(
+                          fontFamily: 'Raleway',
+                          fontSize: 18,
+                          color: Color(0x73ffffff),
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      const Spacer(),
+                      Text(
+                        'Version  '+GameVersion.getCurrentVersion(),
+                        style: const TextStyle(
+                          fontFamily: 'Raleway',
+                          fontSize: 16,
+                          color: Color(0x5cffffff),
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      const SizedBox(height: 20,),
+                    ],
+                  ),
+                ),
+                const Expanded(
+                  flex: 1,
+                  child: SizedBox(),
+                ),
+              ],
+            ),
+          ):const SizedBox(),
+        ],
       ),
     );
   }
