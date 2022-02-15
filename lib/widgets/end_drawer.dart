@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 import 'package:flutter_puzzle_hackathon/main.dart';
+import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 
 class EndDrawer extends StatefulWidget {
   const EndDrawer({Key? key}) : super(key: key);
@@ -43,14 +44,20 @@ class _EndDrawerState extends State<EndDrawer> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: const[
-                  Icon(Icons.lock,color: Themes.primaryColor,),
-                  SizedBox(width: 20,),
+              Responsive.isMobile(context)?Align(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  onPressed: ()=>Navigator.pop(context),
+                  icon: const Icon(Icons.close,color: Themes.primaryColor),
+                ),
+              ):Row(
+                children: [
+                  const Icon(Icons.lock,color: Themes.primaryColor,),
+                  const SizedBox(width: 20,),
                   Text(
                     "Puzzle Buster",
                     style: TextStyle(
-                      fontSize: 25,
+                      fontSize: Responsive.isTablet(context)?35:25,
                       color: Colors.white,
                       fontFamily: 'BigSpace',
                       decorationStyle: TextDecorationStyle.wavy,
@@ -59,19 +66,19 @@ class _EndDrawerState extends State<EndDrawer> {
                 ],
               ),
               const SizedBox(height: 20,),
-              const Text(
+              Text(
                 "Enter your basic details",
                 style: TextStyle(
-                  fontSize: 14.0,
+                  fontSize: Responsive.size(context, mobile: 19, tablet: 28, desktop: 14),
                   color: Colors.white,
                 ),
               ),
-              const Text(
+              Text(
                 'Enter your basic details Enter your username',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 12),
                   fontFamily: 'Raleway',
-                  color: Color(0x75ffffff),
+                  color: const Color(0x75ffffff),
                 ),
                 textAlign: TextAlign.left,
               ),
@@ -80,15 +87,16 @@ class _EndDrawerState extends State<EndDrawer> {
                 height: 25,
                 child: TextField(
                   controller: nameEditingController,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white,fontSize: Responsive.isTablet(context)?25:14,),
                   decoration: InputDecoration(
                     isDense: true,
                     filled: true,
                     fillColor: Colors.transparent,
                     hintText: "Enter your username",
-                    hintStyle: const TextStyle(
+                    hintStyle: TextStyle(
                       fontFamily: 'Raleway',
-                      color: Color(0x38ffffff),
+                      color: const Color(0x38ffffff),
+                      fontSize: Responsive.isTablet(context)?24:14,
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                     enabledBorder: const UnderlineInputBorder(
@@ -109,19 +117,19 @@ class _EndDrawerState extends State<EndDrawer> {
                   ),
                 ),
               ),
-              const SizedBox(height: 17,),
-              const Text(
+              const SizedBox(height: 20,),
+              Text(
                 'Choose Avatar',
                 style: TextStyle(
                   fontFamily: 'Raleway',
-                  fontSize: 13,
+                  fontSize: Responsive.size(context, mobile: 16.5, tablet: 24, desktop: 13),
                   color: Colors.white,
                 ),
                 textAlign: TextAlign.left,
               ),
               const SizedBox(height: 10,),
               SizedBox(
-                height: 60,
+                height: Responsive.size(context, mobile: 80, tablet: 140, desktop: 60),
                 child: ListView.separated(
                   itemCount: 5,
                   scrollDirection: Axis.horizontal,
@@ -129,7 +137,7 @@ class _EndDrawerState extends State<EndDrawer> {
                   itemBuilder: (context,index){
                     return Container(
                       height: double.infinity,
-                      width: 60,
+                      width: Responsive.size(context, mobile: 80, tablet: 140, desktop: 60),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(6.0),
                         image: const DecorationImage(
@@ -142,11 +150,11 @@ class _EndDrawerState extends State<EndDrawer> {
                 ),
               ),
               const SizedBox(height: 17,),
-              const Text(
+              Text(
                 'Select game mode',
                 style: TextStyle(
                   fontFamily: 'Raleway',
-                  fontSize: 13,
+                  fontSize: Responsive.size(context, mobile: 16.5, tablet: 24, desktop: 13),
                   color: Colors.white,
                 ),
                 textAlign: TextAlign.left,
@@ -154,12 +162,12 @@ class _EndDrawerState extends State<EndDrawer> {
               const SizedBox(height: 10,),
               TextButton(
                 onPressed: (){},
-                child: const Text(
+                child: Text(
                   'Single Player',
                   style: TextStyle(
                     fontFamily: 'Raleway',
-                    fontSize: 14,
-                    color: Color(0x8affffff),
+                    fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 13),
+                    color: const Color(0x8affffff),
                   ),
                   textAlign: TextAlign.left,
                 ),
@@ -168,18 +176,18 @@ class _EndDrawerState extends State<EndDrawer> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   backgroundColor: const Color(0xff1d1d1d),
-                  minimumSize: const Size(double.infinity,45),
+                  minimumSize: Size(double.infinity,Responsive.isTablet(context)?70:45),
                 ),
               ),
               const SizedBox(height: 5,),
               TextButton(
                 onPressed: (){},
-                child: const Text(
+                child: Text(
                   'Multi Player',
                   style: TextStyle(
                     fontFamily: 'Raleway',
-                    fontSize: 14,
-                    color: Color(0x8affffff),
+                    fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 13),
+                    color: const Color(0x8affffff),
                   ),
                   textAlign: TextAlign.left,
                 ),
@@ -188,15 +196,15 @@ class _EndDrawerState extends State<EndDrawer> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   backgroundColor: const Color(0xff1d1d1d),
-                  minimumSize: const Size(double.infinity,45),
+                  minimumSize: Size(double.infinity,Responsive.isTablet(context)?70:45),
                 ),
               ),
               const SizedBox(height: 17,),
-              const Text(
+              Text(
                 'Would you like to',
                 style: TextStyle(
                   fontFamily: 'Raleway',
-                  fontSize: 13,
+                  fontSize: Responsive.size(context, mobile: 16.5, tablet: 24, desktop: 13),
                   color: Colors.white,
                 ),
                 textAlign: TextAlign.left,
@@ -204,12 +212,12 @@ class _EndDrawerState extends State<EndDrawer> {
               const SizedBox(height: 10,),
               TextButton(
                 onPressed: (){},
-                child: const Text(
+                child: Text(
                   'Join Room',
                   style: TextStyle(
                     fontFamily: 'Raleway',
-                    fontSize: 14,
-                    color: Color(0x8affffff),
+                    fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 13),
+                    color: const Color(0x8affffff),
                   ),
                   textAlign: TextAlign.left,
                 ),
@@ -218,18 +226,18 @@ class _EndDrawerState extends State<EndDrawer> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   backgroundColor: const Color(0xff1d1d1d),
-                  minimumSize: const Size(double.infinity,45),
+                  minimumSize: Size(double.infinity,Responsive.isTablet(context)?70:45),
                 ),
               ),
               const SizedBox(height: 5,),
               TextButton(
                 onPressed: (){},
-                child: const Text(
+                child: Text(
                   'Create Room',
                   style: TextStyle(
                     fontFamily: 'Raleway',
-                    fontSize: 13,
-                    color: Color(0x8affffff),
+                    fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 13),
+                    color: const Color(0x8affffff),
                   ),
                   textAlign: TextAlign.left,
                 ),
@@ -238,12 +246,15 @@ class _EndDrawerState extends State<EndDrawer> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   backgroundColor: const Color(0xff1d1d1d),
-                  minimumSize: const Size(double.infinity,45),
+                  minimumSize: Size(double.infinity,Responsive.isTablet(context)?70:45),
                 ),
               ),
               const SizedBox(height: 25,),
               Container(
-                padding: const EdgeInsets.symmetric(vertical:10,horizontal: 8),
+                padding: EdgeInsets.symmetric(
+                  vertical:Responsive.isTablet(context)?25:10,
+                  horizontal: Responsive.isTablet(context)?20:8,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: const Color(0xff1d1d1d),
@@ -251,11 +262,11 @@ class _EndDrawerState extends State<EndDrawer> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       "sfdagsg6757vdvfsvfgseg",
                       style: TextStyle(
                         fontFamily: 'Raleway',
-                        fontSize: 15,
+                        fontSize: Responsive.isTablet(context)?25:15,
                         color: Colors.white,
                       ),
                       textAlign: TextAlign.left,
@@ -264,17 +275,21 @@ class _EndDrawerState extends State<EndDrawer> {
                       onPressed: (){},
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
-                      icon: const Icon(Icons.copy,color: Themes.primaryColor,size: 21,),
+                      icon: Icon(
+                        Icons.copy,
+                        color: Themes.primaryColor,
+                        size: Responsive.isTablet(context)?35:21,
+                      ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 15,),
+              SizedBox(height: Responsive.isTablet(context)?30:15,),
               TextButton(
                 onPressed: (){},
-                child: const CustomPaint(
-                  painter: StartPlayingPainter(),
-                  size: Size(double.infinity,45),
+                child: CustomPaint(
+                  painter: StartPlayingPainter(context),
+                  size: const Size(double.infinity,45),
                 ),
                 style: TextButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -293,18 +308,19 @@ class _EndDrawerState extends State<EndDrawer> {
 }
 
 class StartPlayingPainter extends CustomPainter {
+  final BuildContext context;
   static const double iconSize=20;
-  const StartPlayingPainter();
+  const StartPlayingPainter(this.context);
 
   @override
   void paint(Canvas canvas, Size size) {
     const pointMode = ui.PointMode.polygon;
-    const textStyle = TextStyle(
+    final textStyle = TextStyle(
       fontFamily: 'Raleway',
-      fontSize: 15,
-      color: Color(0xc2ffffff),
+      fontSize: Responsive.size(context, mobile: 16, tablet: 30, desktop: 15),
+      color: const Color(0xc2ffffff),
     );
-    const textSpan = TextSpan(
+    final textSpan = TextSpan(
       text: 'Start Playing',
       style: textStyle,
     );

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_puzzle_hackathon/classes/cookie_manager.dart';
 import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
@@ -186,12 +185,19 @@ class _HomePageState extends State<HomePage> {
       endDrawerEnableOpenDragGesture: false,
       drawerScrimColor: Colors.transparent,
       onEndDrawerChanged: (bool isOpened){
-        setState(() {
-          isEndDrawerOpen=isOpened;
-        });
+        if(!Responsive.isMobile(context)){
+          setState(() {
+            isEndDrawerOpen=isOpened;
+          });
+        }
       },
       endDrawer: SizedBox(
-        width: MediaQuery.of(context).size.width*0.25,
+        width: Responsive.size(
+          context,
+          mobile: double.infinity,
+          tablet: MediaQuery.of(context).size.width*0.6,
+          desktop: MediaQuery.of(context).size.width*0.25,
+        ),
         child: Theme(
           data: Theme.of(context).copyWith(canvasColor: Themes.bgColor,),
           child: const Drawer(
@@ -221,7 +227,8 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          height: Responsive.size(context, mobile: 25, tablet: 30, desktop: 20),
+                          alignment: Alignment.center,
+                          height: Responsive.size(context, mobile: 28, tablet: 30, desktop: 20),
                           color: Colors.black,
                           child: Marquee(
                             blankSpace: 5,
@@ -246,6 +253,7 @@ class _HomePageState extends State<HomePage> {
                             style: TextStyle(
                               fontFamily: 'BigSpace',
                               color: Colors.black,
+                              fontSize: 25,
                             ),
                           ),
                         ):Center(
@@ -283,7 +291,7 @@ class _HomePageState extends State<HomePage> {
                                   child: Container(
                                     color: Colors.black54,
                                     padding: const EdgeInsets.all(6),
-                                    margin: const EdgeInsets.fromLTRB(10,0,10,10),
+                                    margin: const EdgeInsets.fromLTRB(10,0,10,8),
                                     child: content(),
                                   ),
                                 ),
@@ -349,7 +357,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             isEndDrawerOpen?Container(
-              width: MediaQuery.of(context).size.width*0.75,
+              width: Responsive.isDesktop(context)?MediaQuery.of(context).size.width*0.75:MediaQuery.of(context).size.width*0.4,
               height: double.infinity,
               color: const Color(0xe0000000),
               child: Row(
@@ -359,12 +367,13 @@ class _HomePageState extends State<HomePage> {
                     child: SizedBox(),
                   ),
                   Expanded(
-                    flex: 4,
+                    flex: Responsive.isDesktop(context)?4:7,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Spacer(),
                         const Spacer(),
+                        Responsive.isDesktop(context)?const SizedBox():const Spacer(),
                         const Text(
                           'How to play?',
                           style: TextStyle(
@@ -375,7 +384,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 30,),
+                        SizedBox(height: Responsive.isDesktop(context)?30:10,),
                         const Text(
                           'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. ',
                           style: TextStyle(
