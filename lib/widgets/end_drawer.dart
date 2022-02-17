@@ -1,7 +1,15 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_puzzle_hackathon/classes/cookie_manager.dart';
+import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
+import 'package:flutter_puzzle_hackathon/classes/room_services.dart';
+import 'package:flutter_puzzle_hackathon/constants/room_enum.dart';
 import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 import 'package:flutter_puzzle_hackathon/main.dart';
+import 'package:flutter_puzzle_hackathon/models/room_arguments.dart';
+import 'package:flutter_puzzle_hackathon/models/room_model.dart';
+import 'package:flutter_puzzle_hackathon/routing/fluro_routing.dart';
 import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 
 class EndDrawer extends StatefulWidget {
@@ -12,6 +20,10 @@ class EndDrawer extends StatefulWidget {
 }
 
 class _EndDrawerState extends State<EndDrawer> {
+  Room room=Room.none;
+  bool isGameModeSelected=false;
+  bool showRoomOptions=false;
+  String? roomId;
   late ScrollController _scrollController;
   late TextEditingController nameEditingController;
   late TextEditingController roomIdEditingController;
@@ -31,6 +43,97 @@ class _EndDrawerState extends State<EndDrawer> {
     nameEditingController.dispose();
     roomIdEditingController.dispose();
     super.dispose();
+  }
+
+  void saveUserName(){
+    if(nameEditingController.text.trim().isNotEmpty){
+      CookieManager.addCookieForAYear('currentUserName', nameEditingController.text.trim());
+      Dialogs.showToast('Username saved..');
+    } else {
+      Dialogs.showToast('Please enter username to continue..');
+    }
+  }
+
+  void createRoom()async{
+    if(nameEditingController.text.trim().isEmpty){
+      Dialogs.showToast("Name can't be empty");
+    } else if(roomId==null){
+      currentUser.currentUserName=nameEditingController.text.trim();
+      roomId=await RoomServices.createRoom(nameEditingController.text.trim(),3);
+      CookieManager.addToCookie('roomId', roomId!);
+      setState(() {
+        room=Room.create;
+      });
+    } else {
+      Dialogs.showToast('Room is already created..');
+    }
+  }
+
+  void joinRoom()async{
+    if(nameEditingController.text.trim().isEmpty){
+      Dialogs.showToast("Name can't be empty");
+    } else if(roomIdEditingController.text.trim().isEmpty){
+      Dialogs.showToast('Enter room id to continue');
+    } else {
+      currentUser.currentUserName=nameEditingController.text.trim();
+      RoomModel? roomModel=await RoomServices.joinRoom(roomIdEditingController.text.trim(), nameEditingController.text.trim());
+      FluroRouting.navigateToPage(
+        routeName: '/room',
+        context: context,
+        arguments: RoomArguments(
+          currentUserName: nameEditingController.text.trim(),
+          roomId: roomIdEditingController.text.trim(),
+          roomModel: roomModel,
+        ),
+      );
+    }
+  }
+
+  void startPLaying(){
+    FluroRouting.navigateToPage(
+      routeName: '/room',
+      context: context,
+      arguments: RoomArguments(
+        currentUserName: nameEditingController.text.trim(),
+        roomId: roomId!,
+      ),
+    );
+  }
+
+  Widget myButton({required String heading, required Function() onPressed}){
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 600),
+      width: double.infinity,
+      height: Responsive.isTablet(context)?70:35,
+      child: TextButton(
+        onPressed: onPressed,
+        child: Text(
+          heading,
+          style: TextStyle(
+            fontFamily: 'Raleway',
+            fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 13),
+          ),
+          textAlign: TextAlign.left,
+        ),
+        style: TextButton.styleFrom().copyWith(
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(6),),
+          ),
+          padding: MaterialStateProperty.all(EdgeInsets.zero),
+          backgroundColor: MaterialStateProperty.all(const Color(0xff1d1d1d),),
+          minimumSize: MaterialStateProperty.all(Size.zero),
+          foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+            if (states.contains(MaterialState.hovered)) {
+              return Themes.primaryColor;
+            }
+            if (states.contains(MaterialState.pressed)) {
+              return Colors.blue;
+            }
+            return const Color(0x8affffff);
+          }),
+        ),
+      ),
+    );
   }
 
   @override
@@ -111,7 +214,7 @@ class _EndDrawerState extends State<EndDrawer> {
                     suffixIcon: IconButton(
                       constraints: const BoxConstraints(),
                       padding: const EdgeInsets.only(bottom: 5),
-                      onPressed: (){},
+                      onPressed: ()=>saveUserName(),
                       icon: const Icon(Icons.arrow_forward,color: Themes.primaryColor,),
                     ),
                   ),
@@ -160,145 +263,124 @@ class _EndDrawerState extends State<EndDrawer> {
                 textAlign: TextAlign.left,
               ),
               const SizedBox(height: 10,),
-              TextButton(
-                onPressed: (){},
-                child: Text(
-                  'Single Player',
-                  style: TextStyle(
-                    fontFamily: 'Raleway',
-                    fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 13),
-                    color: const Color(0x8affffff),
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-                style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  backgroundColor: const Color(0xff1d1d1d),
-                  minimumSize: Size(double.infinity,Responsive.isTablet(context)?70:45),
-                ),
+              myButton(
+                heading: 'Single Player',
+                onPressed: (){
+                  CookieManager.deleteMultiplayerGameCookies();
+                  FluroRouting.navigateToPage(routeName: '/game', context: context);
+                },
               ),
               const SizedBox(height: 5,),
-              TextButton(
-                onPressed: (){},
-                child: Text(
-                  'Multi Player',
-                  style: TextStyle(
-                    fontFamily: 'Raleway',
-                    fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 13),
-                    color: const Color(0x8affffff),
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-                style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  backgroundColor: const Color(0xff1d1d1d),
-                  minimumSize: Size(double.infinity,Responsive.isTablet(context)?70:45),
-                ),
+              myButton(
+                heading: 'Multi Player',
+                onPressed: ()=>setState(()=>showRoomOptions=true),
               ),
-              const SizedBox(height: 17,),
-              Text(
-                'Would you like to',
-                style: TextStyle(
-                  fontFamily: 'Raleway',
-                  fontSize: Responsive.size(context, mobile: 16.5, tablet: 24, desktop: 13),
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.left,
-              ),
-              const SizedBox(height: 10,),
-              TextButton(
-                onPressed: (){},
-                child: Text(
-                  'Join Room',
-                  style: TextStyle(
-                    fontFamily: 'Raleway',
-                    fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 13),
-                    color: const Color(0x8affffff),
+              showRoomOptions?Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 17,),
+                  Text(
+                    'Would you like to',
+                    style: TextStyle(
+                      fontFamily: 'Raleway',
+                      fontSize: Responsive.size(context, mobile: 16.5, tablet: 24, desktop: 13),
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.left,
                   ),
-                  textAlign: TextAlign.left,
-                ),
-                style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
+                  const SizedBox(height: 10,),
+                  myButton(
+                    heading: 'Join Room',
+                    onPressed: ()=>setState(()=>room=Room.join),
                   ),
-                  backgroundColor: const Color(0xff1d1d1d),
-                  minimumSize: Size(double.infinity,Responsive.isTablet(context)?70:45),
-                ),
-              ),
-              const SizedBox(height: 5,),
-              TextButton(
-                onPressed: (){},
-                child: Text(
-                  'Create Room',
-                  style: TextStyle(
-                    fontFamily: 'Raleway',
-                    fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 13),
-                    color: const Color(0x8affffff),
+                  const SizedBox(height: 5,),
+                  myButton(
+                    heading: 'Create Room',
+                    onPressed: ()=>createRoom(),
                   ),
-                  textAlign: TextAlign.left,
-                ),
-                style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  backgroundColor: const Color(0xff1d1d1d),
-                  minimumSize: Size(double.infinity,Responsive.isTablet(context)?70:45),
-                ),
-              ),
-              const SizedBox(height: 25,),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  vertical:Responsive.isTablet(context)?25:10,
-                  horizontal: Responsive.isTablet(context)?20:8,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color(0xff1d1d1d),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "sfdagsg6757vdvfsvfgseg",
-                      style: TextStyle(
+                  const SizedBox(height: 25,),
+                  room==Room.none?const SizedBox():room==Room.join?TextField(
+                    controller: roomIdEditingController,
+                    style: TextStyle(color: Colors.white,fontSize: Responsive.isTablet(context)?25:14,),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      hintText: "Enter room id",
+                      hintStyle: TextStyle(
                         fontFamily: 'Raleway',
-                        fontSize: Responsive.isTablet(context)?25:15,
-                        color: Colors.white,
+                        color: const Color(0x38ffffff),
+                        fontSize: Responsive.isTablet(context)?24:14,
                       ),
-                      textAlign: TextAlign.left,
-                    ),
-                    IconButton(
-                      onPressed: (){},
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      icon: Icon(
-                        Icons.copy,
-                        color: Themes.primaryColor,
-                        size: Responsive.isTablet(context)?35:21,
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      border: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              SizedBox(height: Responsive.isTablet(context)?30:15,),
-              TextButton(
-                onPressed: (){},
-                child: CustomPaint(
-                  painter: StartPlayingPainter(context),
-                  size: const Size(double.infinity,45),
-                ),
-                style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
+                  ):Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical:Responsive.isTablet(context)?25:10,
+                      horizontal: Responsive.isTablet(context)?20:8,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color(0xff1d1d1d),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          roomId!,
+                          style: TextStyle(
+                            fontFamily: 'Raleway',
+                            fontSize: Responsive.isTablet(context)?25:15,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                        IconButton(
+                          onPressed: ()=>Clipboard.setData(ClipboardData(text: roomId)),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          icon: Icon(
+                            Icons.copy,
+                            color: Themes.primaryColor,
+                            size: Responsive.isTablet(context)?35:21,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  backgroundColor: Colors.transparent,
-                  minimumSize: const Size(double.infinity,45),
-                ),
-              ),
+                  SizedBox(height: Responsive.isTablet(context)?30:15,),
+                  room!=Room.none?TextButton(
+                    onPressed: (){
+                      if(room==Room.create){
+                        startPLaying();
+                      } else if(room==Room.join){
+                        joinRoom();
+                      }
+                    },
+                    child: CustomPaint(
+                      painter: StartPlayingPainter(
+                        context,
+                        room==Room.create?'Start Playing':'Join Room',
+                      ),
+                      size: const Size(double.infinity,45),
+                    ),
+                    style: TextButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      backgroundColor: Colors.transparent,
+                      minimumSize: const Size(double.infinity,45),
+                    ),
+                  ):const SizedBox(),
+                ],
+              ):const SizedBox(),
             ],
           ),
         ),
@@ -309,8 +391,9 @@ class _EndDrawerState extends State<EndDrawer> {
 
 class StartPlayingPainter extends CustomPainter {
   final BuildContext context;
+  final String text;
   static const double iconSize=20;
-  const StartPlayingPainter(this.context);
+  const StartPlayingPainter(this.context,this.text);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -321,7 +404,7 @@ class StartPlayingPainter extends CustomPainter {
       color: const Color(0xc2ffffff),
     );
     final textSpan = TextSpan(
-      text: 'Start Playing',
+      text: text,
       style: textStyle,
     );
     final textPainter = TextPainter(
