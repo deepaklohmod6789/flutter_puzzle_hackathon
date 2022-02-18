@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_puzzle_hackathon/constants/themes.dart';
+import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 
 class GameSettings extends StatefulWidget {
+  final int puzzleSize;
+  final int noOfRounds;
   final ValueChanged<Map<String,int>> onUpdate;
-  const GameSettings({Key? key,required this.onUpdate}) : super(key: key);
+  const GameSettings({Key? key,required this.onUpdate, required this.puzzleSize,required this.noOfRounds}) : super(key: key);
 
   @override
   _GameSettingsState createState() => _GameSettingsState();
@@ -12,8 +15,8 @@ class GameSettings extends StatefulWidget {
 class _GameSettingsState extends State<GameSettings> {
   static const List<int> _rounds=[1,3,5,7];
   static const List<int> _sizes=[3,4,5];
-  int noOfRounds=_rounds.first;
-  int puzzleSize=_sizes.first;
+  late int noOfRounds;
+  late int puzzleSize;
 
   void returnNewValues(){
     Map<String,int> val={
@@ -21,6 +24,13 @@ class _GameSettingsState extends State<GameSettings> {
       'puzzleSize': puzzleSize,
     };
     widget.onUpdate(val);
+  }
+
+  @override
+  void initState() {
+    noOfRounds=widget.noOfRounds;
+    puzzleSize=widget.puzzleSize;
+    super.initState();
   }
 
   @override
@@ -34,36 +44,36 @@ class _GameSettingsState extends State<GameSettings> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 10,),
-          const Text(
+          Text(
             'Settings',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: Responsive.size(context, mobile: 22, tablet: 16, desktop: 16),
               color: Colors.white,
               fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.left,
           ),
-          const Text(
+          Text(
             'Enter your basic details Enter your username',
             style: TextStyle(
-              fontSize: 12,
-              color: Color(0x75ffffff),
+              fontSize: Responsive.size(context, mobile: 16, tablet: 12, desktop: 12),
+              color: const Color(0x75ffffff),
             ),
             textAlign: TextAlign.left,
           ),
-          const SizedBox(height: 40,),
-          const Text(
+          SizedBox(height: Responsive.isMobile(context)?20:40,),
+          Text(
             'No. of games',
             style: TextStyle(
-              fontSize: 16,
-              color: Color(0xffffffff),
+              fontSize: Responsive.isMobile(context)?18:16,
+              color: const Color(0xffffffff),
               fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.left,
           ),
           const SizedBox(height: 10,),
           SizedBox(
-            height: 30,
+            height: Responsive.isMobile(context)?39:30,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               separatorBuilder: (context,index)=>const SizedBox(width: 10,),
@@ -76,16 +86,23 @@ class _GameSettingsState extends State<GameSettings> {
                   },
                   child: Text(
                     _rounds[index].toString(),
-                    style: const TextStyle(fontSize: 12),
+                    style: TextStyle(
+                      fontSize: Responsive.size(context, mobile: 16, tablet: 12, desktop: 12),
+                    ),
                   ),
                   style: TextButton.styleFrom().copyWith(
                     shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(
-                        side: BorderSide(color: noOfRounds==_rounds[index]?Themes.primaryColor:Colors.transparent,width: 0.7),
+                        side: BorderSide(
+                          color: noOfRounds==_rounds[index]?Themes.primaryColor:Colors.transparent,
+                          width: Responsive.isMobile(context)?1:0.7,
+                        ),
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    minimumSize: MaterialStateProperty.all(const Size(60, 30)),
+                    minimumSize: MaterialStateProperty.all(
+                      Size(Responsive.isMobile(context)?80:60, Responsive.isMobile(context)?37:30),
+                    ),
                     padding: MaterialStateProperty.all(EdgeInsets.zero),
                     backgroundColor: MaterialStateProperty.all(const Color(0xff1d1d1d),),
                     foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
@@ -102,19 +119,19 @@ class _GameSettingsState extends State<GameSettings> {
               },
             ),
           ),
-          const SizedBox(height: 30,),
-          const Text(
+          SizedBox(height: Responsive.isMobile(context)?20:30,),
+          Text(
             'No. of tiles',
             style: TextStyle(
-              fontSize: 16,
-              color: Color(0xffffffff),
+              fontSize: Responsive.isMobile(context)?18:16,
+              color: const Color(0xffffffff),
               fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.left,
           ),
           const SizedBox(height: 10,),
           SizedBox(
-            height: 30,
+            height: Responsive.isMobile(context)?39:30,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               separatorBuilder: (context,index)=>const SizedBox(width: 10,),
@@ -127,16 +144,23 @@ class _GameSettingsState extends State<GameSettings> {
                   },
                   child: Text(
                     _sizes[index].toString()+'*'+_sizes[index].toString(),
-                    style: const TextStyle(fontSize: 12),
+                    style: TextStyle(
+                      fontSize: Responsive.size(context, mobile: 16, tablet: 12, desktop: 12),
+                    ),
                   ),
                   style: TextButton.styleFrom().copyWith(
                     shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(
-                        side: BorderSide(color: puzzleSize==_sizes[index]?Themes.primaryColor:Colors.transparent,width: 0.7),
+                        side: BorderSide(
+                          color: puzzleSize==_sizes[index]?Themes.primaryColor:Colors.transparent,
+                          width: Responsive.isMobile(context)?1:0.7,
+                        ),
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    minimumSize: MaterialStateProperty.all(const Size(60, 30)),
+                    minimumSize: MaterialStateProperty.all(
+                      Size(Responsive.isMobile(context)?80:60, Responsive.isMobile(context)?37:30),
+                    ),
                     padding: MaterialStateProperty.all(EdgeInsets.zero),
                     backgroundColor: MaterialStateProperty.all(const Color(0xff1d1d1d),),
                     foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {

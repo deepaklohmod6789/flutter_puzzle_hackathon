@@ -14,7 +14,7 @@ class StartPlayingPainter extends CustomPainter {
     const pointMode = ui.PointMode.polygon;
     final textStyle = TextStyle(
       fontFamily: 'Raleway',
-      fontSize: Responsive.size(context, mobile: 16, tablet: 30, desktop: 15),
+      fontSize: Responsive.size(context, mobile: 17, tablet: 30, desktop: 15),
       color: const Color(0xc2ffffff),
     );
     final textSpan = TextSpan(

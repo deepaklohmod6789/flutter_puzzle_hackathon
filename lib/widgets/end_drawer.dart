@@ -33,7 +33,7 @@ class _EndDrawerState extends State<EndDrawer> {
     _scrollController=ScrollController();
     nameEditingController=TextEditingController();
     roomIdEditingController=TextEditingController();
-    roomIdEditingController.text='mOdhU2t3daWZM4tJkh5x';
+    roomIdEditingController.text='FJ6HZYmHoWBscfAbIo8A';
     nameEditingController.text=currentUser.currentUserName;
     super.initState();
   }
@@ -92,14 +92,14 @@ class _EndDrawerState extends State<EndDrawer> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 600),
       width: double.infinity,
-      height: Responsive.isTablet(context)?70:35,
+      height: Responsive.size(context, mobile: 45, tablet: 70, desktop: 35),
       child: TextButton(
         onPressed: onPressed,
         child: Text(
           heading,
           style: TextStyle(
             fontFamily: 'Raleway',
-            fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 13),
+            fontSize: Responsive.size(context, mobile: 16, tablet: 22, desktop: 13),
           ),
           textAlign: TextAlign.left,
         ),
@@ -167,7 +167,7 @@ class _EndDrawerState extends State<EndDrawer> {
               Text(
                 'Enter your basic details Enter your username',
                 style: TextStyle(
-                  fontSize: Responsive.size(context, mobile: 14, tablet: 22, desktop: 12),
+                  fontSize: Responsive.size(context, mobile: 15, tablet: 22, desktop: 12),
                   fontFamily: 'Raleway',
                   color: const Color(0x75ffffff),
                 ),
@@ -175,10 +175,13 @@ class _EndDrawerState extends State<EndDrawer> {
               ),
               const SizedBox(height: 30,),
               SizedBox(
-                height: 25,
+                height: Responsive.isMobile(context)?30:25,
                 child: TextField(
                   controller: nameEditingController,
-                  style: TextStyle(color: Colors.white,fontSize: Responsive.isTablet(context)?25:14,),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: Responsive.size(context, mobile: 18, tablet: 25, desktop: 14),
+                  ),
                   decoration: InputDecoration(
                     isDense: true,
                     filled: true,
@@ -187,7 +190,7 @@ class _EndDrawerState extends State<EndDrawer> {
                     hintStyle: TextStyle(
                       fontFamily: 'Raleway',
                       color: const Color(0x38ffffff),
-                      fontSize: Responsive.isTablet(context)?24:14,
+                      fontSize: Responsive.size(context, mobile: 18, tablet: 24, desktop: 14),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                     enabledBorder: const UnderlineInputBorder(
@@ -213,7 +216,7 @@ class _EndDrawerState extends State<EndDrawer> {
                 'Choose Avatar',
                 style: TextStyle(
                   fontFamily: 'Raleway',
-                  fontSize: Responsive.size(context, mobile: 16.5, tablet: 24, desktop: 13),
+                  fontSize: Responsive.size(context, mobile: 17, tablet: 24, desktop: 13),
                   color: Colors.white,
                 ),
                 textAlign: TextAlign.left,
@@ -245,7 +248,7 @@ class _EndDrawerState extends State<EndDrawer> {
                 'Select game mode',
                 style: TextStyle(
                   fontFamily: 'Raleway',
-                  fontSize: Responsive.size(context, mobile: 16.5, tablet: 24, desktop: 13),
+                  fontSize: Responsive.size(context, mobile: 17, tablet: 24, desktop: 13),
                   color: Colors.white,
                 ),
                 textAlign: TextAlign.left,
@@ -271,7 +274,7 @@ class _EndDrawerState extends State<EndDrawer> {
                     'Would you like to',
                     style: TextStyle(
                       fontFamily: 'Raleway',
-                      fontSize: Responsive.size(context, mobile: 16.5, tablet: 24, desktop: 13),
+                      fontSize: Responsive.size(context, mobile: 17, tablet: 24, desktop: 13),
                       color: Colors.white,
                     ),
                     textAlign: TextAlign.left,
@@ -289,15 +292,19 @@ class _EndDrawerState extends State<EndDrawer> {
                   const SizedBox(height: 25,),
                   room==Room.none?const SizedBox():room==Room.join?TextField(
                     controller: roomIdEditingController,
-                    style: TextStyle(color: Colors.white,fontSize: Responsive.isTablet(context)?25:14,),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: Responsive.size(context, mobile: 16, tablet: 25, desktop: 14),
+                    ),
                     decoration: InputDecoration(
+                      isDense: Responsive.isMobile(context)?true:false,
                       filled: true,
                       fillColor: Colors.transparent,
                       hintText: "Enter room id",
                       hintStyle: TextStyle(
                         fontFamily: 'Raleway',
                         color: const Color(0x38ffffff),
-                        fontSize: Responsive.isTablet(context)?24:14,
+                        fontSize: Responsive.size(context, mobile: 18, tablet: 24, desktop: 14),
                       ),
                       enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.white),
@@ -311,8 +318,8 @@ class _EndDrawerState extends State<EndDrawer> {
                     ),
                   ):Container(
                     padding: EdgeInsets.symmetric(
-                      vertical:Responsive.isTablet(context)?25:10,
-                      horizontal: Responsive.isTablet(context)?20:8,
+                      vertical:Responsive.size(context, mobile: 12, tablet: 25, desktop: 10),
+                      horizontal: Responsive.size(context, mobile: 10, tablet: 20, desktop: 8),
                     ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
