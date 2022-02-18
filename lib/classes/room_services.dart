@@ -11,10 +11,13 @@ class RoomServices{
     await CollectionReferences.room.doc(roomId).set({
       'roomId': roomId,
       'puzzleSize': puzzleSize,
+      'noOfRounds': 1,
       'roomOwnerName': currentUserName,
       'roomOwnerId': currentUser.userId,
+      'roomOwnerImage':'',
       'otherPlayerName': '',
       'otherPlayerId':'',
+      'otherPlayerImage': '',
       'gameStarted': false,
       'roomCreatedTimeStamp': FieldValue.serverTimestamp(),
     });
@@ -27,9 +30,11 @@ class RoomServices{
       bool isRoomOwner=doc['roomOwnerId']==currentUser.userId;
       String userNameField=isRoomOwner?"roomOwnerName":"otherPlayerName";
       String userIdField=isRoomOwner?"roomOwnerId":"otherPlayerId";
+      String userImageField=isRoomOwner?"roomOwnerImage":"otherPlayerImage";
       await CollectionReferences.room.doc(roomId).update({
         userNameField: currentUserName,
         userIdField: currentUser.userId,
+        userImageField: '',
       }).catchError((error){
         if(error.code=='permission-denied'){
           Dialogs.showToast('Room is full');
@@ -45,10 +50,19 @@ class RoomServices{
     }
   }
 
-  static Future<void> startGame(String roomId,int puzzleSize)async{
+  static Future<void> removeOtherUser(String roomId)async{
+    await CollectionReferences.room.doc(roomId).update({
+      'otherPlayerName': '',
+      'otherPlayerId':'',
+      'otherPlayerImage': '',
+    });
+  }
+
+  static Future<void> startGame(String roomId,int puzzleSize,int noOfRounds)async{
     await CollectionReferences.room.doc(roomId).update({
       'gameStarted': true,
       'puzzleSize': puzzleSize,
+      'noOfRounds': noOfRounds,
     });
   }
 

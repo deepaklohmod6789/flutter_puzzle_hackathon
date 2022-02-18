@@ -1,4 +1,3 @@
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_puzzle_hackathon/classes/cookie_manager.dart';
@@ -7,13 +6,14 @@ import 'package:flutter_puzzle_hackathon/classes/room_services.dart';
 import 'package:flutter_puzzle_hackathon/constants/room_enum.dart';
 import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 import 'package:flutter_puzzle_hackathon/main.dart';
-import 'package:flutter_puzzle_hackathon/models/room_arguments.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
 import 'package:flutter_puzzle_hackathon/routing/fluro_routing.dart';
 import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
+import 'package:flutter_puzzle_hackathon/widgets/start_playing_painter.dart';
 
 class EndDrawer extends StatefulWidget {
-  const EndDrawer({Key? key}) : super(key: key);
+  final ValueChanged<String> onResult;
+  const EndDrawer({Key? key,required this.onResult}) : super(key: key);
 
   @override
   State<EndDrawer> createState() => _EndDrawerState();
@@ -33,6 +33,7 @@ class _EndDrawerState extends State<EndDrawer> {
     _scrollController=ScrollController();
     nameEditingController=TextEditingController();
     roomIdEditingController=TextEditingController();
+    roomIdEditingController.text='mOdhU2t3daWZM4tJkh5x';
     nameEditingController.text=currentUser.currentUserName;
     super.initState();
   }
@@ -77,27 +78,14 @@ class _EndDrawerState extends State<EndDrawer> {
     } else {
       currentUser.currentUserName=nameEditingController.text.trim();
       RoomModel? roomModel=await RoomServices.joinRoom(roomIdEditingController.text.trim(), nameEditingController.text.trim());
-      FluroRouting.navigateToPage(
-        routeName: '/room',
-        context: context,
-        arguments: RoomArguments(
-          currentUserName: nameEditingController.text.trim(),
-          roomId: roomIdEditingController.text.trim(),
-          roomModel: roomModel,
-        ),
-      );
+      widget.onResult(roomModel!.roomId);
+      Navigator.pop(context);
     }
   }
 
   void startPLaying(){
-    FluroRouting.navigateToPage(
-      routeName: '/room',
-      context: context,
-      arguments: RoomArguments(
-        currentUserName: nameEditingController.text.trim(),
-        roomId: roomId!,
-      ),
-    );
+    widget.onResult(roomId!);
+    Navigator.pop(context);
   }
 
   Widget myButton({required String heading, required Function() onPressed}){
@@ -386,64 +374,5 @@ class _EndDrawerState extends State<EndDrawer> {
         ),
       ),
     );
-  }
-}
-
-class StartPlayingPainter extends CustomPainter {
-  final BuildContext context;
-  final String text;
-  static const double iconSize=20;
-  const StartPlayingPainter(this.context,this.text);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const pointMode = ui.PointMode.polygon;
-    final textStyle = TextStyle(
-      fontFamily: 'Raleway',
-      fontSize: Responsive.size(context, mobile: 16, tablet: 30, desktop: 15),
-      color: const Color(0xc2ffffff),
-    );
-    final textSpan = TextSpan(
-      text: text,
-      style: textStyle,
-    );
-    final textPainter = TextPainter(
-      text: textSpan,
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout();
-    const xCenter = 0.0;
-    final yCenter = (size.height-textPainter.height) / 2;
-    final textOffset = Offset(xCenter, yCenter);
-    textPainter.paint(canvas, textOffset);
-
-    const icon = Icons.arrow_forward;
-    TextPainter iconPainter = TextPainter(textDirection: TextDirection.ltr);
-    iconPainter.text = TextSpan(
-      text: String.fromCharCode(icon.codePoint),
-      style: TextStyle(
-        color: Themes.primaryColor,
-        fontSize: iconSize,
-        fontFamily: icon.fontFamily,
-        package: icon.fontPackage,
-      ),
-    );
-    iconPainter.layout();
-    iconPainter.paint(canvas, Offset(size.width-iconSize, (size.height-iconPainter.height)/2));
-    final points = [
-      Offset(textPainter.width+10, size.height/2),
-      Offset(size.width-(iconPainter.width/2), size.height/2),
-    ];
-    final paint = Paint()
-      ..color = Themes.primaryColor
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-
-    canvas.drawPoints(pointMode, points, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
   }
 }

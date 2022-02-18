@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_puzzle_hackathon/classes/cookie_manager.dart';
-import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
 import 'package:flutter_puzzle_hackathon/classes/game_version.dart';
-import 'package:flutter_puzzle_hackathon/classes/room_services.dart';
 import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 import 'package:flutter_puzzle_hackathon/main.dart';
-import 'package:flutter_puzzle_hackathon/models/room_arguments.dart';
-import 'package:flutter_puzzle_hackathon/models/room_model.dart';
-import 'package:flutter_puzzle_hackathon/routing/fluro_routing.dart';
+import 'package:flutter_puzzle_hackathon/pages/waiting_room.dart';
 import 'package:flutter_puzzle_hackathon/widgets/end_drawer.dart';
 import 'package:flutter_puzzle_hackathon/widgets/leaderboard.dart';
 import 'package:flutter_puzzle_hackathon/widgets/nav_bar.dart';
@@ -24,7 +19,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool isEndDrawerOpen=false;
+  ValueNotifier<bool> showWaitingRoom=ValueNotifier(false);
   final GlobalKey<ScaffoldState> _key = GlobalKey();
+  String roomId='';
   late TextEditingController nameEditingController;
   late TextEditingController roomIdEditingController;
 
@@ -41,77 +38,6 @@ class _HomePageState extends State<HomePage> {
     nameEditingController.dispose();
     roomIdEditingController.dispose();
     super.dispose();
-  }
-
-  Widget old(){
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment:  CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TextField(
-            controller: nameEditingController,
-            decoration: const InputDecoration(
-              hintText: "Username",
-            ),
-          ),
-          const SizedBox(height: 20,),
-          TextField(
-            controller: roomIdEditingController,
-            decoration: const InputDecoration(
-              hintText: "Room Id",
-            ),
-          ),
-          const SizedBox(height: 20,),
-          ElevatedButton(
-            onPressed: (){
-              CookieManager.deleteMultiplayerGameCookies();
-              FluroRouting.navigateToPage(routeName: '/game', context: context);
-            },
-            child: const Text("Single Player"),
-          ),
-          const SizedBox(height: 20,),
-          ElevatedButton(
-            onPressed: (){
-              if(nameEditingController.text.trim().isNotEmpty){
-                currentUser.currentUserName=nameEditingController.text.trim();
-                FluroRouting.navigateToPage(
-                  routeName: '/room',
-                  context: context,
-                  arguments: RoomArguments(currentUserName: nameEditingController.text.trim()),
-                );
-              } else {
-                Dialogs.showToast('Enter name to continue');
-              }
-            },
-            child: const Text("Create Room"),
-          ),
-          const SizedBox(height: 20,),
-          ElevatedButton(
-            onPressed: ()async{
-              if(nameEditingController.text.trim().isEmpty){
-                Dialogs.showToast('Enter name to continue');
-              } else if(roomIdEditingController.text.trim().isEmpty){
-                Dialogs.showToast('Enter room id to continue');
-              } else {
-                currentUser.currentUserName=nameEditingController.text.trim();
-                RoomModel? roomModel=await RoomServices.joinRoom(roomIdEditingController.text.trim(), nameEditingController.text.trim());
-                FluroRouting.navigateToPage(
-                  routeName: '/room',
-                  context: context,
-                  arguments: RoomArguments(
-                    currentUserName: nameEditingController.text.trim(),
-                    roomId: roomIdEditingController.text.trim(),
-                    roomModel: roomModel,
-                  ),
-                );
-              }
-            },
-            child: const Text("Join Room"),
-          ),
-        ],
-      ),
-    );
   }
 
   Column content(){
@@ -200,8 +126,13 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Theme(
           data: Theme.of(context).copyWith(canvasColor: Themes.bgColor,),
-          child: const Drawer(
-            child: EndDrawer(),
+          child: Drawer(
+            child: EndDrawer(
+              onResult: (String roomId){
+                this.roomId=roomId;
+                showWaitingRoom.value=true;
+              },
+            ),
           ),
         ),
       ),
@@ -415,6 +346,17 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ):const SizedBox(),
+            ValueListenableBuilder(
+              valueListenable: showWaitingRoom,
+              builder: (context,bool value,child){
+                return value?WaitingRoom(
+                  roomId: roomId,
+                  onClose: (){
+                    showWaitingRoom.value=false;
+                  },
+                ):const SizedBox();
+              },
+            ),
           ],
         ),
       ),
