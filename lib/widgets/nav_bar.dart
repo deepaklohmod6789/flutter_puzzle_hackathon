@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_puzzle_hackathon/classes/cookie_manager.dart';
 import 'package:flutter_puzzle_hackathon/constants/themes.dart';
+import 'package:flutter_puzzle_hackathon/routing/fluro_routing.dart';
 import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 
 class NavBar extends StatelessWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
   late final ButtonStyle buttonStyle;
 
-  NavBar({Key? key}) : super(key: key){
+  NavBar({Key? key,required this.scaffoldKey}) : super(key: key){
     buttonStyle=TextButton.styleFrom().copyWith(
       foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
         if (states.contains(MaterialState.hovered)) {
@@ -50,7 +53,10 @@ class NavBar extends StatelessWidget {
           ),
           TextButton(
             style: buttonStyle,
-            onPressed: () { },
+            onPressed: (){
+              CookieManager.deleteMultiplayerGameCookies();
+              FluroRouting.navigateToPage(routeName: '/game', context: context);
+            },
             child: Text(
               'single player',
               style: TextStyle(fontSize: Responsive.isDesktop(context)?16:22,fontWeight: FontWeight.w500),
@@ -58,7 +64,7 @@ class NavBar extends StatelessWidget {
           ),
           TextButton(
             style: buttonStyle,
-            onPressed: () { },
+            onPressed: ()=>scaffoldKey.currentState!.openEndDrawer(),
             child: Text(
               'multiplayer',
               style: TextStyle(fontSize: Responsive.isDesktop(context)?16:22,fontWeight: FontWeight.w500),

@@ -97,7 +97,7 @@ class _WaitingRoomState extends State<WaitingRoom> {
   List<Widget> child(BoxConstraints constraints){
     return [
       SizedBox(
-        height: Responsive.isMobile(context)?constraints.biggest.height*0.4:constraints.biggest.height*0.6,
+        height: Responsive.isDesktop(context)?constraints.biggest.height*0.6:constraints.biggest.height*0.4,
         child: WaitingRoomCard(waitingRoomUser: roomOwnerBoard!,),
       ),
       Text(
@@ -114,14 +114,14 @@ class _WaitingRoomState extends State<WaitingRoom> {
           otherPlayerBoard!.userId==""?Text(
             'Waiting to join',
             style: TextStyle(
-              fontSize: Responsive.size(context, mobile: 18, tablet: 16, desktop: 16),
+              fontSize: Responsive.size(context, mobile: 18, tablet: 24, desktop: 16),
               color: const Color(0x5cffffff),
             ),
             textAlign: TextAlign.left,
           ):const SizedBox(),
           const SizedBox(height: 5,),
           SizedBox(
-            height: Responsive.isMobile(context)?constraints.biggest.height*0.4:constraints.biggest.height*0.6,
+            height: Responsive.isDesktop(context)?constraints.biggest.height*0.6:constraints.biggest.height*0.4,
             child: WaitingRoomCard(waitingRoomUser: otherPlayerBoard!,),
           ),
           const SizedBox(height: 5,),
@@ -130,7 +130,7 @@ class _WaitingRoomState extends State<WaitingRoom> {
             child: Text(
               'Remove',
               style: TextStyle(
-                fontSize: Responsive.size(context, mobile: 16, tablet: 14, desktop: 14),
+                fontSize: Responsive.size(context, mobile: 16, tablet: 20, desktop: 14),
                 color: const Color(0xffff0000),
               ),
               textAlign: TextAlign.left,
@@ -147,18 +147,22 @@ class _WaitingRoomState extends State<WaitingRoom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       key: _key,
       drawerEnableOpenDragGesture: false,
-      drawer: Drawer(
-        child: GameSettings(
-          puzzleSize: _puzzleSize,
-          noOfRounds: _noOfRounds,
-          onUpdate: (Map<String,int> value){
-            setState(() {
-              _noOfRounds=value['noOfRounds']!;
-              _puzzleSize=value['puzzleSize']!;
-            });
-          },
+      drawer: SizedBox(
+        width: Responsive.isMobile(context)?MediaQuery.of(context).size.width*0.75:MediaQuery.of(context).size.width*0.55,
+        child: Drawer(
+          child: GameSettings(
+            puzzleSize: _puzzleSize,
+            noOfRounds: _noOfRounds,
+            onUpdate: (Map<String,int> value){
+              setState(() {
+                _noOfRounds=value['noOfRounds']!;
+                _puzzleSize=value['puzzleSize']!;
+              });
+            },
+          ),
         ),
       ),
       body: Container(
@@ -167,7 +171,7 @@ class _WaitingRoomState extends State<WaitingRoom> {
         color: const Color(0xe8000000),
         child: loading?const Center(child: CircularProgressIndicator(),):Row(
           children: [
-            Responsive.isMobile(context)?const SizedBox():SizedBox(
+            Responsive.isDesktop(context)?SizedBox(
               width: 300,
               height: double.infinity,
               child: GameSettings(
@@ -180,7 +184,7 @@ class _WaitingRoomState extends State<WaitingRoom> {
                   });
                 },
               ),
-            ),
+            ):const SizedBox(),
             Expanded(
               child: Column(
                 children: [
@@ -188,16 +192,18 @@ class _WaitingRoomState extends State<WaitingRoom> {
                     flex: 1,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Responsive.isMobile(context)? IconButton(
+                        SizedBox(width: Responsive.isTablet(context)?10:0,),
+                        Responsive.isDesktop(context)? const SizedBox():IconButton(
                           onPressed: ()=>_key.currentState!.openDrawer(),
-                          icon: const Icon(Icons.settings_outlined,color: Colors.white,size: 28,),
-                        ):const SizedBox(),
+                          icon: Icon(Icons.settings_outlined,color: Colors.white,size: Responsive.isTablet(context)?35:28,),
+                        ),
+                        const Spacer(),
                         IconButton(
                           onPressed: ()=>widget.onClose(),
-                          icon: const Icon(Icons.close,color: Themes.primaryColor,size: 25,),
+                          icon: Icon(Icons.close,color: Themes.primaryColor,size: Responsive.isTablet(context)?32:25,),
                         ),
+                        SizedBox(width: Responsive.isTablet(context)?10:0,),
                       ],
                     ),
                   ),
@@ -205,23 +211,23 @@ class _WaitingRoomState extends State<WaitingRoom> {
                     flex: 8,
                     child: LayoutBuilder(
                       builder: (context,constraints) {
-                        return Responsive.isMobile(context)?Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: child(constraints),
-                        ):SizedBox(
+                        return Responsive.isDesktop(context)?SizedBox(
                           width: constraints.biggest.width*0.8,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: child(constraints),
                           ),
+                        ):Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: child(constraints),
                         );
                       }
                     ),
                   ),
                   Expanded(
                     flex: 1,
-                    child: Align(
+                    child: roomModel!.roomOwnerId==currentUser.userId?Align(
                       alignment: Alignment.centerRight,
                       child: Padding(
                         padding: const EdgeInsets.only(right:20.0),
@@ -236,7 +242,7 @@ class _WaitingRoomState extends State<WaitingRoom> {
                           ),
                         ),
                       ),
-                    ),
+                    ):const SizedBox(),
                   ),
                 ],
               ),

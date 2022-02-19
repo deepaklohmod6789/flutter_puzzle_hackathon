@@ -297,7 +297,7 @@ class _EndDrawerState extends State<EndDrawer> {
                       fontSize: Responsive.size(context, mobile: 16, tablet: 25, desktop: 14),
                     ),
                     decoration: InputDecoration(
-                      isDense: Responsive.isMobile(context)?true:false,
+                      isDense: Responsive.isMobile(context)?true:null,
                       filled: true,
                       fillColor: Colors.transparent,
                       hintText: "Enter room id",

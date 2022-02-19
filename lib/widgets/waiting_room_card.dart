@@ -61,7 +61,7 @@ class WaitingRoomCard extends StatelessWidget {
               child: Text(
                 waitingRoomUser.userName==""?"anonymous":waitingRoomUser.userName,
                 style: TextStyle(
-                  fontSize: Responsive.isMobile(context)?15:null,
+                  fontSize: Responsive.size(context, mobile: 15, tablet: 22, desktop: 14),
                 ),
               ),
             ),

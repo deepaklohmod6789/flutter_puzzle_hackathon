@@ -39,7 +39,7 @@ class _GameSettingsState extends State<GameSettings> {
       width: double.infinity,
       height: double.infinity,
       color: const Color(0xe8000000),
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.all(Responsive.isTablet(context)?15:10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -47,7 +47,7 @@ class _GameSettingsState extends State<GameSettings> {
           Text(
             'Settings',
             style: TextStyle(
-              fontSize: Responsive.size(context, mobile: 22, tablet: 16, desktop: 16),
+              fontSize: Responsive.size(context, mobile: 22, tablet: 30, desktop: 16),
               color: Colors.white,
               fontWeight: FontWeight.w600,
             ),
@@ -56,7 +56,7 @@ class _GameSettingsState extends State<GameSettings> {
           Text(
             'Enter your basic details Enter your username',
             style: TextStyle(
-              fontSize: Responsive.size(context, mobile: 16, tablet: 12, desktop: 12),
+              fontSize: Responsive.size(context, mobile: 16, tablet: 20, desktop: 12),
               color: const Color(0x75ffffff),
             ),
             textAlign: TextAlign.left,
@@ -65,7 +65,7 @@ class _GameSettingsState extends State<GameSettings> {
           Text(
             'No. of games',
             style: TextStyle(
-              fontSize: Responsive.isMobile(context)?18:16,
+              fontSize: Responsive.size(context, mobile: 18, tablet: 27, desktop: 16),
               color: const Color(0xffffffff),
               fontWeight: FontWeight.w600,
             ),
@@ -73,7 +73,7 @@ class _GameSettingsState extends State<GameSettings> {
           ),
           const SizedBox(height: 10,),
           SizedBox(
-            height: Responsive.isMobile(context)?39:30,
+            height: Responsive.size(context, mobile: 39, tablet: 50, desktop: 30),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               separatorBuilder: (context,index)=>const SizedBox(width: 10,),
@@ -87,7 +87,7 @@ class _GameSettingsState extends State<GameSettings> {
                   child: Text(
                     _rounds[index].toString(),
                     style: TextStyle(
-                      fontSize: Responsive.size(context, mobile: 16, tablet: 12, desktop: 12),
+                      fontSize: Responsive.size(context, mobile: 16, tablet: 22, desktop: 12),
                     ),
                   ),
                   style: TextButton.styleFrom().copyWith(
@@ -95,13 +95,15 @@ class _GameSettingsState extends State<GameSettings> {
                       RoundedRectangleBorder(
                         side: BorderSide(
                           color: noOfRounds==_rounds[index]?Themes.primaryColor:Colors.transparent,
-                          width: Responsive.isMobile(context)?1:0.7,
+                          width: Responsive.size(context, mobile: 1, tablet: 2, desktop: 0.7),
                         ),
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
                     minimumSize: MaterialStateProperty.all(
-                      Size(Responsive.isMobile(context)?80:60, Responsive.isMobile(context)?37:30),
+                      Size(
+                        Responsive.size(context, mobile: 80, tablet: 120, desktop: 60), Responsive.size(context, mobile: 37, tablet: 47, desktop: 30),
+                      ),
                     ),
                     padding: MaterialStateProperty.all(EdgeInsets.zero),
                     backgroundColor: MaterialStateProperty.all(const Color(0xff1d1d1d),),
@@ -123,7 +125,7 @@ class _GameSettingsState extends State<GameSettings> {
           Text(
             'No. of tiles',
             style: TextStyle(
-              fontSize: Responsive.isMobile(context)?18:16,
+              fontSize: Responsive.size(context, mobile: 18, tablet: 27, desktop: 16),
               color: const Color(0xffffffff),
               fontWeight: FontWeight.w600,
             ),
@@ -131,7 +133,7 @@ class _GameSettingsState extends State<GameSettings> {
           ),
           const SizedBox(height: 10,),
           SizedBox(
-            height: Responsive.isMobile(context)?39:30,
+            height: Responsive.size(context, mobile: 39, tablet: 50, desktop: 30),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               separatorBuilder: (context,index)=>const SizedBox(width: 10,),
@@ -145,7 +147,7 @@ class _GameSettingsState extends State<GameSettings> {
                   child: Text(
                     _sizes[index].toString()+'*'+_sizes[index].toString(),
                     style: TextStyle(
-                      fontSize: Responsive.size(context, mobile: 16, tablet: 12, desktop: 12),
+                      fontSize: Responsive.size(context, mobile: 16, tablet: 22, desktop: 12),
                     ),
                   ),
                   style: TextButton.styleFrom().copyWith(
@@ -153,13 +155,15 @@ class _GameSettingsState extends State<GameSettings> {
                       RoundedRectangleBorder(
                         side: BorderSide(
                           color: puzzleSize==_sizes[index]?Themes.primaryColor:Colors.transparent,
-                          width: Responsive.isMobile(context)?1:0.7,
+                          width: Responsive.size(context, mobile: 1, tablet: 2, desktop: 0.7),
                         ),
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
                     minimumSize: MaterialStateProperty.all(
-                      Size(Responsive.isMobile(context)?80:60, Responsive.isMobile(context)?37:30),
+                      Size(
+                        Responsive.size(context, mobile: 80, tablet: 120, desktop: 60), Responsive.size(context, mobile: 37, tablet: 47, desktop: 30),
+                      ),
                     ),
                     padding: MaterialStateProperty.all(EdgeInsets.zero),
                     backgroundColor: MaterialStateProperty.all(const Color(0xff1d1d1d),),

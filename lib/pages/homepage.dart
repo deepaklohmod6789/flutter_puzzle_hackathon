@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Responsive.isMobile(context)?const SizedBox():NavBar(),
+        Responsive.isMobile(context)?const SizedBox():NavBar(scaffoldKey: _key,),
         Expanded(
           child: Padding(
             padding: EdgeInsets.only(
