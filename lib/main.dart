@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
           thumbColor: MaterialStateProperty.all(Colors.white),
         ),
       ),
-      initialRoute: '/test',
+      initialRoute: '/home',
       onGenerateRoute: FluroRouting.router.generator,
     );
   }
