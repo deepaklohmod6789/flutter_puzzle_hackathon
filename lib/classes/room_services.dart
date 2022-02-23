@@ -90,4 +90,12 @@ class RoomServices{
     }
     return data;
   }
+
+  static Future<void> sendMessage(String roomId, String userId, String message)async{
+    await CollectionReferences.room.doc(roomId).collection('messages').add({
+      'message': message,
+      'userId': userId,
+    });
+  }
+
 }

@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 
 class EmptyBoardGrid extends StatelessWidget {
   final double tilePadding;
@@ -21,9 +22,9 @@ class EmptyBoardGrid extends StatelessWidget {
       itemBuilder: (context,index){
         return Neumorphic(
           style: NeumorphicStyle(
-            boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(12)),
+            boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(6)),
             depth: -4,
-            color: Colors.black12,
+            color: Themes.emptyTileColor,
             lightSource: LightSource.topRight,
           ),
         );

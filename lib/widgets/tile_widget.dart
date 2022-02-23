@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 import 'package:flutter_puzzle_hackathon/models/tile.dart';
 
 class TileWidget extends StatelessWidget {
@@ -51,9 +52,11 @@ class TileWidget extends StatelessWidget {
             width: tile.size.width,
             child: Neumorphic(
               style: NeumorphicStyle(
-                boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(12)),
+                boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(6)),
                 depth: 8,
+                shadowLightColor: const Color(0x29000000),
                 lightSource: LightSource.topRight,
+                color: Themes.tileColor,
               ),
               child: Center(
                 child: Text(
