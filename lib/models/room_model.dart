@@ -80,11 +80,14 @@ class RoomModel{
   static void saveToCookies(RoomModel roomModel){
     CookieManager.addToCookie('roomId', roomModel.roomId);
     CookieManager.addToCookie('puzzleSize', roomModel.puzzleSize.toString());
+    CookieManager.addToCookie('noOfRounds', roomModel.noOfRounds.toString());
     CookieManager.addToCookie('gameStarted', roomModel.gameStarted.toString());
     CookieManager.addToCookie('roomOwnerId', roomModel.roomOwnerId);
     CookieManager.addToCookie('roomOwnerName', roomModel.roomOwnerName);
+    CookieManager.addToCookie('roomOwnerImage', roomModel.roomOwnerImage);
     CookieManager.addToCookie('otherPlayerId', roomModel.otherPlayerId);
     CookieManager.addToCookie('otherPlayerName', roomModel.otherPlayerName);
+    CookieManager.addToCookie('otherPlayerImage', roomModel.otherPlayerImage);
     CookieManager.addToCookie('roomCreatedTimeStamp', roomModel.roomCreatedTimeStamp.toString());
   }
 

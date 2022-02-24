@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_puzzle_hackathon/classes/collection_references.dart';
+import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 
 class UserNameWidget extends StatefulWidget {
@@ -20,14 +21,22 @@ class UserNameWidget extends StatefulWidget {
 }
 
 class _UserNameWidgetState extends State<UserNameWidget> with SingleTickerProviderStateMixin{
-  late AnimationController animationController;
   bool newMessage=false;
+  late AnimationController _animationController;
+  late Animation<Offset> positionAnimation;
+  late Animation<double> scale;
+  String message="";
 
   @override
   void initState() {
-    animationController=AnimationController(vsync: this);
+    _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+    positionAnimation = Tween<Offset>(begin: const Offset(0,1.5), end: const Offset(0,0)).animate(
+        CurvedAnimation(parent: _animationController, curve: Curves.fastLinearToSlowEaseIn));
+    scale=CurvedAnimation(parent: _animationController, curve: Curves.fastOutSlowIn);
     CollectionReferences.room.doc(widget.roomId).collection('messages')
-        .where('userId',isEqualTo: widget.otherPlayerId).limit(1)
+        .where('userId',isEqualTo: widget.otherPlayerId)
+        .orderBy('timeStamp',descending: true)
+        .limit(1)
         .snapshots().listen((QuerySnapshot snapshot){
           if(snapshot.docs.isNotEmpty){
             onNewMessage(snapshot.docs.first);
@@ -36,14 +45,23 @@ class _UserNameWidgetState extends State<UserNameWidget> with SingleTickerProvid
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   void onNewMessage(DocumentSnapshot snapshot){
+    message=snapshot['message'];
     setState(() {
       newMessage=true;
     });
-    Future.delayed(const Duration(seconds: 1),(){
+    _animationController.forward();
+    Future.delayed(const Duration(seconds: 2),(){
       setState(() {
         newMessage=false;
       });
+      _animationController.reverse();
     });
   }
 
@@ -52,7 +70,7 @@ class _UserNameWidgetState extends State<UserNameWidget> with SingleTickerProvid
     return Column(
       children: [
         AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 400),
+          duration: const Duration(milliseconds: 500),
           style: TextStyle(
             fontSize: newMessage?(Responsive.isMobile(context)?14:16):(Responsive.isMobile(context)?20:26),
             color: Colors.white,
@@ -60,6 +78,26 @@ class _UserNameWidgetState extends State<UserNameWidget> with SingleTickerProvid
           child: Text(
             widget.userName,
             textAlign: TextAlign.center,
+          ),
+        ),
+        AnimatedOpacity(
+          opacity: newMessage?1:0.0,
+          duration: const Duration(milliseconds: 500),
+          child: SlideTransition(
+            position: positionAnimation,
+            child: ScaleTransition(
+              scale: scale,
+              child: Text(
+                message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Themes.primaryColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                  letterSpacing: 2,
+                ),
+              ),
+            ),
           ),
         ),
       ],

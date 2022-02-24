@@ -95,6 +95,7 @@ class RoomServices{
     await CollectionReferences.room.doc(roomId).collection('messages').add({
       'message': message,
       'userId': userId,
+      'timeStamp': FieldValue.serverTimestamp(),
     });
   }
 
