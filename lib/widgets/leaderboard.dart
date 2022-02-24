@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_puzzle_hackathon/classes/leaderboard_services.dart';
 import 'package:flutter_puzzle_hackathon/models/leaderboard_model.dart';
 import 'package:flutter_puzzle_hackathon/widgets/leaderboard_card.dart';
 import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
@@ -22,15 +23,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
   }
 
   void getLeaderBoard()async{
-    LeaderBoardModel model=LeaderBoardModel(
-      userId: 'acbnj1knvlsdnla',
-      username: 'dr. unknown weird',
-      image: 'https://images.unsplash.com/photo-1639628735078-ed2f038a193e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzB8fGNoYXJhY3RlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60',
-      score: 1688,
-      timeInSeconds: 08.24,
-      rank: 31,
-    );
-    leaderBoardModels=[model,model,model,model,model,model,model,model,model,model,];
+    leaderBoardModels=await LeaderboardServices.getLeaderBoard();
     setState(() {
       loading=false;
     });

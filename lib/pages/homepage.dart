@@ -9,6 +9,7 @@ import 'package:flutter_puzzle_hackathon/widgets/nav_bar.dart';
 import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 import 'package:flutter_puzzle_hackathon/widgets/sidebar.dart';
 import 'package:marquee/marquee.dart';
+import 'package:universal_html/html.dart' as html;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -27,6 +28,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    final loader = html.document.getElementsByClassName('preloader');
+    if(loader.isNotEmpty) {
+      loader.first.remove();
+    }
     nameEditingController=TextEditingController();
     roomIdEditingController=TextEditingController();
     nameEditingController.text=currentUser.currentUserName;

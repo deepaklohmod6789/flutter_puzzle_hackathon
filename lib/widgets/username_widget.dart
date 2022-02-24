@@ -80,7 +80,7 @@ class _UserNameWidgetState extends State<UserNameWidget> with SingleTickerProvid
             textAlign: TextAlign.center,
           ),
         ),
-        AnimatedOpacity(
+        newMessage?AnimatedOpacity(
           opacity: newMessage?1:0.0,
           duration: const Duration(milliseconds: 500),
           child: SlideTransition(
@@ -99,7 +99,7 @@ class _UserNameWidgetState extends State<UserNameWidget> with SingleTickerProvid
               ),
             ),
           ),
-        ),
+        ):const SizedBox(),
       ],
     );
   }

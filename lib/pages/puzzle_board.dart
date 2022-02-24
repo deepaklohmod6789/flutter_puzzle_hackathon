@@ -1,14 +1,16 @@
 import 'dart:math';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_puzzle_hackathon/classes/board.dart';
-import 'package:flutter_puzzle_hackathon/classes/hint_algo_solve.dart';
+import 'package:flutter_puzzle_hackathon/classes/leaderboard_services.dart';
 import 'package:flutter_puzzle_hackathon/classes/room_services.dart';
+import 'package:flutter_puzzle_hackathon/main.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
 import 'package:flutter_puzzle_hackathon/models/tile.dart';
 import 'package:flutter_puzzle_hackathon/classes/zero_tile.dart';
+import 'package:flutter_puzzle_hackathon/pages/game.dart';
 import 'package:flutter_puzzle_hackathon/widgets/empty_board_grid.dart';
 import 'package:flutter_puzzle_hackathon/widgets/tile_widget.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class PuzzleBoard extends StatefulWidget {
   final int maxRows;
@@ -117,12 +119,21 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
         double y1=tiles[currentIndex].offset.dy;
         tiles[currentIndex].offset=tiles[zeroIndex].offset;
         tiles[zeroIndex].offset=Offset(x1,y1);
+        List<Tile> orderedTilesAfterPlayingMove=Board.orderList(List.from(tiles));
         if(widget.roomModel!=null){
-          List<Tile> orderedTilesAfterPlayingMove=Board.orderList(List.from(tiles));
           saveMove(orderedTilesAfterPlayingMove);
         }
-        if(Board.isSolved(orderedTiles, widget.maxRows)){
-          print('solved');
+        if(Board.isSolved(orderedTilesAfterPlayingMove, widget.maxRows)){
+          stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+          if(widget.roomModel==null){
+            LeaderboardServices.saveResult(
+              currentUser.userId,
+              currentUser.currentUserName,
+              'https://images.unsplash.com/photo-1639628735078-ed2f038a193e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzB8fGNoYXJhY3RlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60',
+              500 * widget.movesPlayed.value ~/ sqrt(seconds),
+              seconds,
+            );
+          }
         }
       }
 
@@ -138,24 +149,6 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
       board.add(tile.value);
     }
     RoomServices.saveBoardPosition(widget.roomModel!.roomId, board,widget.movesPlayed.value);
-  }
-
-  void getHint()async{
-    List<int> currentState=[];
-    List<List<int>> goalStateIn2d=[];
-    List<List<int>> currentStateIn2d=[];
-    for(Tile tile in Board.orderList(List.from(tiles))){
-      currentState.add(tile.value);
-    }
-    for(int i=0;i<widget.maxRows;i++){
-      List<int> temp=goalState.sublist(i*widget.maxRows,widget.maxRows*(i+1));
-      List<int> temp2=currentState.sublist(i*widget.maxRows,widget.maxRows*(i+1));
-      goalStateIn2d.add(temp);
-      currentStateIn2d.add(temp2);
-    }
-    Solve solve=Solve(widget.maxRows, currentStateIn2d, goalStateIn2d);
-    List<String> result = await compute(getMoves, solve);
-    print(result);
   }
 
   void shuffle(){

@@ -12,6 +12,12 @@ import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 import 'package:flutter_puzzle_hackathon/widgets/username_widget.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
+late final StopWatchTimer stopWatchTimer = StopWatchTimer(
+  mode: StopWatchMode.countUp,
+  onChangeRawSecond: (s)=>seconds=s,
+);
+int seconds=0;
+
 class MyGame extends StatefulWidget {
   final GameArguments? gameArguments;
 
@@ -33,14 +39,12 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
   late final AnimationController animationController;
   late final Animation<double> scaleAnimation;
   late final Animation<double> rotateAnimation;
-  Board? otherPlayerBoard;
-  late Board currentPlayerBoard;
+  BoardWidget? otherPlayerBoard;
+  late BoardWidget currentPlayerBoard;
   late TextEditingController messageEditingController;
-  late final StopWatchTimer stopWatchTimer;
 
   @override
   void initState() {
-    stopWatchTimer = StopWatchTimer(mode: StopWatchMode.countUp,);
     startTimer();
     messageEditingController=TextEditingController();
     animationController=AnimationController(
@@ -57,10 +61,9 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
   }
 
   @override
-  void dispose() async{
+  void dispose(){
     messageEditingController.dispose();
     animationController.dispose();
-    await stopWatchTimer.dispose();
     super.dispose();
   }
 
@@ -71,7 +74,7 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
   void getBoards(){
     if(widget.gameArguments!=null){
       bool isRoomOwner=widget.gameArguments!.roomModel.roomOwnerId==currentUser.userId;
-      otherPlayerBoard=Board(
+      otherPlayerBoard=BoardWidget(
         maxRows: widget.gameArguments!.roomModel.puzzleSize,
         tilePadding: tilePadding,
         isOtherPlayerBoard: true,
@@ -82,7 +85,7 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
         scaleAnimation: scaleAnimation,
         rotateAnimation: rotateAnimation,
       );
-      currentPlayerBoard=Board(
+      currentPlayerBoard=BoardWidget(
         maxRows: widget.gameArguments!.roomModel.puzzleSize,
         userId: isRoomOwner?widget.gameArguments!.roomModel.roomOwnerId:widget.gameArguments!.roomModel.otherPlayerId,
         userName: isRoomOwner?widget.gameArguments!.roomModel.roomOwnerName:widget.gameArguments!.roomModel.otherPlayerName,
@@ -95,7 +98,7 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
         rotateAnimation: rotateAnimation,
       );
     } else {
-      currentPlayerBoard=Board(
+      currentPlayerBoard=BoardWidget(
         maxRows: 4,
         tilePadding: tilePadding,
         isOtherPlayerBoard: false,
@@ -289,162 +292,164 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Themes.bgColor,
-      body: Responsive(
-        mobile: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.3,
-                  child: roundBlock(),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.3,
-                  child: battleBlock(),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.3,
-                  child: timerBlock(),
-                ),
-              ],
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.height*0.35,
-              child: otherPlayerBoard!,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.height*0.35,
-              child: currentPlayerBoard,
-            ),
-            textFields(),
-          ],
-        ),
-        tablet: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.3,
-                  child: roundBlock(),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.3,
-                  child: battleBlock(),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.3,
-                  child: timerBlock(),
-                ),
-              ],
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.height*0.35,
-              child: otherPlayerBoard!,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.height*0.35,
-              child: currentPlayerBoard,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width*0.75,
-              child: textFields(),
-            ),
-          ],
-        ),
-        desktop: Row(
-          children: [
-            Expanded(
-              child: otherPlayerBoard!,
-            ),
-            Expanded(
-              child: Column(
+      body: SafeArea(
+        child: Responsive(
+          mobile: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(8,0,8,8),
-                      decoration: const BoxDecoration(
-                        color: Themes.lightColor,
-                        borderRadius: BorderRadius.only(bottomLeft:Radius.circular(6),bottomRight: Radius.circular(6)),
-                      ),
-                      child: Column(
-                        children: [
-                          const Spacer(),
-                          battleBlock(),
-                          const Spacer(),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: roundBlock(),
-                              ),
-                              const SizedBox(width: 5,),
-                              Expanded(
-                                child: timerBlock(),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.3,
+                    child: roundBlock(),
                   ),
-                  Expanded(
-                    flex: 5,
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(8,0,8,8),
-                      padding: const EdgeInsets.fromLTRB(8,0,8,8),
-                      decoration: BoxDecoration(
-                        color: Themes.lightColor,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal:8.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: List.generate(_quickChats.length, (index){
-                                  return TextButton(
-                                    onPressed: ()=>sendMessage(_quickChats[index]),
-                                    child: Text(_quickChats[index],),
-                                    style: TextButton.styleFrom().copyWith(
-                                      shape: MaterialStateProperty.all(
-                                        RoundedRectangleBorder(borderRadius: BorderRadius.circular(6),),
-                                      ),
-                                      backgroundColor: MaterialStateProperty.all(const Color(0xff161616),),
-                                      minimumSize: MaterialStateProperty.all(const Size(double.infinity,70)),
-                                      foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-                                        if (states.contains(MaterialState.hovered)) {
-                                          return Themes.primaryColor;
-                                        }
-                                        if (states.contains(MaterialState.pressed)) {
-                                          return Colors.blue;
-                                        }
-                                        return const Color(0x8affffff);
-                                      }),
-                                    ),
-                                  );
-                                }),
-                              ),
-                            ),
-                          ),
-                          textFields(),
-                          const SizedBox(height: 15,),
-                        ],
-                      ),
-                    ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.3,
+                    child: battleBlock(),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.3,
+                    child: timerBlock(),
                   ),
                 ],
               ),
-            ),
-            Expanded(
-              child: currentPlayerBoard,
-            ),
-          ],
+              SizedBox(
+                width: MediaQuery.of(context).size.height*0.35,
+                child: otherPlayerBoard!,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.height*0.35,
+                child: currentPlayerBoard,
+              ),
+              textFields(),
+            ],
+          ),
+          tablet: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.3,
+                    child: roundBlock(),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.3,
+                    child: battleBlock(),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.3,
+                    child: timerBlock(),
+                  ),
+                ],
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.height*0.35,
+                child: otherPlayerBoard!,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.height*0.35,
+                child: currentPlayerBoard,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width*0.75,
+                child: textFields(),
+              ),
+            ],
+          ),
+          desktop: Row(
+            children: [
+              Expanded(
+                child: otherPlayerBoard!,
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(8,0,8,8),
+                        decoration: const BoxDecoration(
+                          color: Themes.lightColor,
+                          borderRadius: BorderRadius.only(bottomLeft:Radius.circular(6),bottomRight: Radius.circular(6)),
+                        ),
+                        child: Column(
+                          children: [
+                            const Spacer(),
+                            battleBlock(),
+                            const Spacer(),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: roundBlock(),
+                                ),
+                                const SizedBox(width: 5,),
+                                Expanded(
+                                  child: timerBlock(),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(8,0,8,8),
+                        padding: const EdgeInsets.fromLTRB(8,0,8,8),
+                        decoration: BoxDecoration(
+                          color: Themes.lightColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal:8.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: List.generate(_quickChats.length, (index){
+                                    return TextButton(
+                                      onPressed: ()=>sendMessage(_quickChats[index]),
+                                      child: Text(_quickChats[index],),
+                                      style: TextButton.styleFrom().copyWith(
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(6),),
+                                        ),
+                                        backgroundColor: MaterialStateProperty.all(const Color(0xff161616),),
+                                        minimumSize: MaterialStateProperty.all(const Size(double.infinity,70)),
+                                        foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+                                          if (states.contains(MaterialState.hovered)) {
+                                            return Themes.primaryColor;
+                                          }
+                                          if (states.contains(MaterialState.pressed)) {
+                                            return Colors.blue;
+                                          }
+                                          return const Color(0x8affffff);
+                                        }),
+                                      ),
+                                    );
+                                  }),
+                                ),
+                              ),
+                            ),
+                            textFields(),
+                            const SizedBox(height: 15,),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: currentPlayerBoard,
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: otherPlayerBoard==null?FloatingActionButton(
@@ -455,7 +460,7 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
   }
 }
 
-class Board extends StatelessWidget {
+class BoardWidget extends StatelessWidget {
   final int maxRows;
   final double tilePadding;
   final bool isOtherPlayerBoard;
@@ -469,7 +474,7 @@ class Board extends StatelessWidget {
   String? userName;
   ValueNotifier<int> movesPlayed=ValueNotifier(0);
 
-  Board({
+  BoardWidget({
     Key? key,
     this.puzzleKey,
     required this.maxRows,

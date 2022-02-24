@@ -31,8 +31,51 @@
 
   <title>flutter_puzzle_hackathon</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="loader.css">
 </head>
 <body>
+
+  <div class ='preloader'>
+    <div class='body'>
+      <span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+      <div class='base'>
+        <span></span>
+        <div class='face'></div>
+      </div>
+    </div>
+    <div class='longfazers'>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+  <h1>Loading...</h1>
+
+  <script>
+    document.addEventListener('wheel', function(e) {
+      e.ctrlKey && e.preventDefault();
+    }, {
+      passive: false,
+    });
+  </script>
+  <script>
+    window.addEventListener('keydown', function(e) {
+      if (event.metaKey || event.ctrlKey) {
+        switch (event.key) {
+          case '=':
+          case '-':
+            event.preventDefault();
+            break;
+        }
+      }
+    });
+  </script>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
