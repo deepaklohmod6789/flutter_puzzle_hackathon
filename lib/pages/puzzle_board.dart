@@ -3,6 +3,7 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_puzzle_hackathon/classes/board.dart';
 import 'package:flutter_puzzle_hackathon/classes/leaderboard_services.dart';
 import 'package:flutter_puzzle_hackathon/classes/room_services.dart';
+import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 import 'package:flutter_puzzle_hackathon/main.dart';
 import 'package:flutter_puzzle_hackathon/models/room_model.dart';
 import 'package:flutter_puzzle_hackathon/models/tile.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_puzzle_hackathon/classes/zero_tile.dart';
 import 'package:flutter_puzzle_hackathon/pages/game.dart';
 import 'package:flutter_puzzle_hackathon/widgets/empty_board_grid.dart';
 import 'package:flutter_puzzle_hackathon/widgets/tile_widget.dart';
+import 'package:flutter_puzzle_hackathon/widgets/win_dialog.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class PuzzleBoard extends StatefulWidget {
@@ -106,6 +108,29 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
     }
   }
 
+  void dialog(String username,int score,String content){
+    int minutes = seconds ~/ 60;
+    int second = seconds % 60;
+    String time=minutes.toString()+':'+second.toString();
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Themes.lightColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: WinDialog(
+          seconds: time,
+          score: score,
+          moves: widget.movesPlayed.value,
+          image: 'https://images.unsplash.com/photo-1639628735078-ed2f038a193e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzB8fGNoYXJhY3RlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60',
+          username: username,
+          content: content,
+        ),
+      ),
+    );
+  }
+
   void _changePosition(int currentIndex,Tile currentTile){
     if(canTap){
       canTap=false;
@@ -125,15 +150,18 @@ class PuzzleBoardState extends State<PuzzleBoard> with TickerProviderStateMixin{
         }
         if(Board.isSolved(orderedTilesAfterPlayingMove, widget.maxRows)){
           stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+          int score=500 * widget.movesPlayed.value ~/ sqrt(seconds);
+          dialog(currentUser.currentUserName, score, 'A significant accomplishment is an excellent opportunity to remind someone of their talent, hard effort, and deservingness. So are you; you finished the game in ${widget.movesPlayed.value} moves and $seconds seconds.',);
           if(widget.roomModel==null){
             LeaderboardServices.saveResult(
               currentUser.userId,
               currentUser.currentUserName,
               'https://images.unsplash.com/photo-1639628735078-ed2f038a193e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzB8fGNoYXJhY3RlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60',
-              500 * widget.movesPlayed.value ~/ sqrt(seconds),
+              score,
               seconds,
             );
           }
+          seconds=0;
         }
       }
 

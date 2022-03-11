@@ -12,11 +12,11 @@ import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 import 'package:flutter_puzzle_hackathon/widgets/username_widget.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-late final StopWatchTimer stopWatchTimer = StopWatchTimer(
+int seconds=0;
+final StopWatchTimer stopWatchTimer = StopWatchTimer(
   mode: StopWatchMode.countUp,
   onChangeRawSecond: (s)=>seconds=s,
 );
-int seconds=0;
 
 class MyGame extends StatefulWidget {
   final GameArguments? gameArguments;
@@ -32,7 +32,6 @@ class MyGame extends StatefulWidget {
 
 class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
   final GlobalKey<PuzzleBoardState> _puzzleKey = GlobalKey();
-  int round=1;
   static const double degrees=60.0;
   static const double tilePadding=10.0;
   static const List<String> _quickChats=['You are going too fast',"You can't defeat me",'Better luck next time','Ha ha, you can defeat me?'];
@@ -137,7 +136,7 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
             textAlign: TextAlign.left,
           ),
           Text(
-            '${round.toString()} / 3',
+            '1 / ${widget.gameArguments!.roomModel.noOfRounds.toString()}',
             style: TextStyle(
               fontSize: Responsive.size(context, mobile: 28, tablet: 40, desktop: 30),
               letterSpacing: 3,
@@ -568,6 +567,7 @@ class BoardWidget extends StatelessWidget {
                           maxRows: maxRows,
                           tilePadding: tilePadding,
                           movesPlayed: movesPlayed,
+                          otherPlayerName: roomModel!.roomOwnerId==currentUser.userId?roomModel!.otherPlayerName:roomModel!.roomOwnerName,
                         ):PuzzleBoard(
                           roomModel: roomModel,
                           currentUserName: userName,
