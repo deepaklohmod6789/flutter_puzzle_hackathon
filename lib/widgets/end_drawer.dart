@@ -33,7 +33,6 @@ class _EndDrawerState extends State<EndDrawer> {
     _scrollController=ScrollController();
     nameEditingController=TextEditingController();
     roomIdEditingController=TextEditingController();
-    roomIdEditingController.text='FJ6HZYmHoWBscfAbIo8A';
     nameEditingController.text=currentUser.currentUserName;
     super.initState();
   }
@@ -165,7 +164,7 @@ class _EndDrawerState extends State<EndDrawer> {
                 ),
               ),
               Text(
-                'Enter your basic details Enter your username',
+                'Enter your username and other details',
                 style: TextStyle(
                   fontSize: Responsive.size(context, mobile: 15, tablet: 22, desktop: 12),
                   fontFamily: 'Raleway',

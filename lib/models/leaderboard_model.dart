@@ -4,8 +4,8 @@ class LeaderBoardModel{
   final String userId;
   final String username;
   final String image;
-  final double score;
-  final double timeInSeconds;
+  final int score;
+  final int timeInSeconds;
   final int rank;
 
   LeaderBoardModel({

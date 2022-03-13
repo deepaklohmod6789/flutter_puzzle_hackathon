@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
+import 'package:flutter_puzzle_hackathon/classes/game_version.dart';
 import 'package:flutter_puzzle_hackathon/classes/room_services.dart';
 import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 import 'package:flutter_puzzle_hackathon/main.dart';
@@ -31,6 +32,7 @@ class MyGame extends StatefulWidget {
 }
 
 class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
+  bool isSinglePlayer=true;
   final GlobalKey<PuzzleBoardState> _puzzleKey = GlobalKey();
   static const double degrees=60.0;
   static const double tilePadding=10.0;
@@ -63,15 +65,19 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
   void dispose(){
     messageEditingController.dispose();
     animationController.dispose();
+    stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+    seconds=0;
     super.dispose();
   }
 
   void startTimer()async{
+    stopWatchTimer.onExecute.add(StopWatchExecute.reset);
     stopWatchTimer.onExecute.add(StopWatchExecute.start);
   }
 
   void getBoards(){
     if(widget.gameArguments!=null){
+      isSinglePlayer=false;
       bool isRoomOwner=widget.gameArguments!.roomModel.roomOwnerId==currentUser.userId;
       otherPlayerBoard=BoardWidget(
         maxRows: widget.gameArguments!.roomModel.puzzleSize,
@@ -97,6 +103,7 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
         rotateAnimation: rotateAnimation,
       );
     } else {
+      isSinglePlayer=true;
       currentPlayerBoard=BoardWidget(
         maxRows: 4,
         tilePadding: tilePadding,
@@ -293,7 +300,45 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
       backgroundColor: Themes.bgColor,
       body: SafeArea(
         child: Responsive(
-          mobile: Column(
+          mobile: isSinglePlayer?Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width:  60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        image: const DecorationImage(
+                          image: NetworkImage('https://images.unsplash.com/photo-1639628735078-ed2f038a193e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzB8fGNoYXJhY3RlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60'),
+                          fit: BoxFit.cover,
+                        )
+                    ),
+                  ),
+                  const SizedBox(width: 20,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        currentUser.currentUserName,
+                        style: const TextStyle(fontSize: 22,color: Colors.white),
+                      ),
+                      const Text(
+                        "Single Player",
+                        style: TextStyle(fontSize: 14,color: Colors.white54),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 30,),
+              currentPlayerBoard,
+            ],
+          ):Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Row(
@@ -324,7 +369,44 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
               textFields(),
             ],
           ),
-          tablet: Column(
+          tablet: isSinglePlayer?Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width:  110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      image: const DecorationImage(
+                        image: NetworkImage('https://images.unsplash.com/photo-1639628735078-ed2f038a193e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzB8fGNoYXJhY3RlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        currentUser.currentUserName,
+                        style: const TextStyle(fontSize: 32,color: Colors.white),
+                      ),
+                      const Text(
+                        "Single Player",
+                        style: TextStyle(fontSize: 20,color: Colors.white54),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              currentPlayerBoard,
+            ],
+          ):Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Row(
@@ -358,7 +440,111 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
               ),
             ],
           ),
-          desktop: Row(
+          desktop: isSinglePlayer?Column(
+            children: [
+              const Expanded(
+                flex: 1,
+                child: SizedBox(),
+              ),
+              Expanded(
+                flex: 4,
+                child: Row(
+                  children: [
+                    const Expanded(
+                      flex: 1,
+                      child: SizedBox(),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width:  50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(6),
+                                  image: const DecorationImage(
+                                    image: NetworkImage('https://images.unsplash.com/photo-1639628735078-ed2f038a193e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzB8fGNoYXJhY3RlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60'),
+                                    fit: BoxFit.cover,
+                                  )
+                                ),
+                              ),
+                              const SizedBox(width: 20,),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text(
+                                    currentUser.currentUserName,
+                                    style: const TextStyle(fontSize: 20,color: Colors.white),
+                                  ),
+                                  const Text(
+                                    "Single Player",
+                                    style: TextStyle(fontSize: 11,color: Colors.white54),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          const Text(
+                            'How to play?',
+                            style: TextStyle(
+                              fontFamily: 'Raleway',
+                              fontSize: 35,
+                              color: Themes.primaryColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: Responsive.isDesktop(context)?30:10,),
+                          const Text(
+                            'You can play this as a single player or multiplayer game, but the goal is to solve the puzzle by tapping on the tiles surrounding the empty tile and arranging the tiles in ascending order beginning with 1 and ending with the empty tile. When you finish a round in single mode, your score is saved to the leaderboard, whereas in multiplayer mode, the next round begins if you have selected more than one round. You can also change the number of tiles on the board and the number of rounds.',
+                            style: TextStyle(
+                              fontFamily: 'Raleway',
+                              fontSize: 18,
+                              color: Color(0x73ffffff),
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                          const Spacer(),
+                          Text(
+                            'Version  '+GameVersion.getCurrentVersion(),
+                            style: const TextStyle(
+                              fontFamily: 'Raleway',
+                              fontSize: 16,
+                              color: Color(0x5cffffff),
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                          const SizedBox(height: 20,),
+                        ],
+                      ),
+                    ),
+                    const Expanded(
+                      flex: 1,
+                      child: SizedBox(),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: currentPlayerBoard,
+                    ),
+                    const Expanded(
+                      flex: 1,
+                      child: SizedBox(),
+                    ),
+                  ],
+                ),
+              ),
+              const Expanded(
+                flex: 1,
+                child: SizedBox(),
+              ),
+            ],
+          ):Row(
             children: [
               Expanded(
                 child: otherPlayerBoard!,
@@ -453,6 +639,7 @@ class _MyGameState extends State<MyGame> with SingleTickerProviderStateMixin{
       ),
       floatingActionButton: otherPlayerBoard==null?FloatingActionButton(
         onPressed: ()=>_puzzleKey.currentState!.shuffle(),
+        backgroundColor: Themes.primaryColor,
         child: const Icon(Icons.shuffle),
       ):null,
     );
@@ -534,12 +721,47 @@ class BoardWidget extends StatelessWidget {
     );
   }
 
+  Container timer(BuildContext context, BoxConstraints constraints){
+    return Container(
+      alignment: Alignment.center,
+      padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context)?10:9),
+      decoration: BoxDecoration(
+        color: Themes.lightColor,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      width: constraints.biggest.width*0.4,
+      child: StreamBuilder(
+        stream: stopWatchTimer.rawTime,
+        builder: (context,AsyncSnapshot<int> snapshot){
+          if(!snapshot.hasData){
+            return Text(
+              '00 : 00',
+              style: TextStyle(
+                fontSize: Responsive.size(context, mobile: 28, tablet: 40, desktop: 30),
+                letterSpacing: 3,
+                color: Themes.primaryColor,
+              ),
+            );
+          }
+          return Text(
+            StopWatchTimer.getDisplayTime(snapshot.data!,milliSecond: false,hours: false),
+            style: TextStyle(
+              fontSize: Responsive.size(context, mobile: 28, tablet: 40, desktop: 30),
+              letterSpacing: 3,
+              color: Themes.primaryColor,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.topCenter,
       children: [
-        Responsive.isDesktop(context)?Container(
+        Responsive.isDesktop(context)&&roomModel!=null?Container(
           width: double.infinity,
           height: MediaQuery.of(context).size.height*0.6,
           color: Themes.lightColor,
@@ -548,7 +770,7 @@ class BoardWidget extends StatelessWidget {
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              UserNameWidget(otherPlayerId: userId!, userName: userName!,roomId: roomModel!.roomId,),
+              roomModel==null?const SizedBox():UserNameWidget(otherPlayerId: userId!, userName: userName!,roomId: roomModel!.roomId,),
               const SizedBox(height: 25,),
               Center(
                 child: AnimatedBuilder(
@@ -593,7 +815,14 @@ class BoardWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 15,),
-              movesBlock(constraints,context),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  roomModel==null?timer(context, constraints):const SizedBox(),
+                  roomModel==null?const SizedBox(width: 10,):const SizedBox(),
+                  movesBlock(constraints,context),
+                ],
+              ),
             ],
           );
         },),

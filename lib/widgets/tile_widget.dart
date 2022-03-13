@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 import 'package:flutter_puzzle_hackathon/models/tile.dart';
+import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 
 class TileWidget extends StatelessWidget {
   final int index;
@@ -24,18 +25,15 @@ class TileWidget extends StatelessWidget {
   }
 
   void assignShuffleAnimation(){
-    //for phone have reverse curve and remove rotate and for web remove reverse cruve and add rotate
     animation=Tween(begin: tile.offset,end: centerOffset).animate(
       CurvedAnimation(
         parent: animationController,
         curve: Curves.ease,
-        //reverseCurve: const ElasticInCurve(0.95),
       ),);
     rotate=Tween(begin: 0.0,end: 2*pi).animate(
       CurvedAnimation(
         parent: animationController,
         curve: Curves.ease,
-        //reverseCurve: const ElasticInCurve(0.95),
       ),);
   }
 
@@ -61,6 +59,9 @@ class TileWidget extends StatelessWidget {
               child: Center(
                 child: Text(
                   tile.value.toString(),
+                  style: TextStyle(
+                    fontSize: Responsive.isTablet(context)?20:null,
+                  ),
                 ),
               ),
             ),

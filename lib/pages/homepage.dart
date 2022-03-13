@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
 import 'package:flutter_puzzle_hackathon/classes/game_version.dart';
 import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 import 'package:flutter_puzzle_hackathon/main.dart';
@@ -20,11 +21,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool isEndDrawerOpen=false;
+  ValueNotifier<bool> showHomeContent=ValueNotifier(true);
   ValueNotifier<bool> showWaitingRoom=ValueNotifier(false);
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   String roomId='';
   late TextEditingController nameEditingController;
   late TextEditingController roomIdEditingController;
+  static const String home="It's time to put your brain to work and burst the most creative slide puzzle you can think of. You take on the role of John, who aims to solve the puzzle in ascending order starting from 1 and in the fewest number of moves and time in order to top the leaderboard. And why not challenge and defeat a friend in multiplayer mode? Remember, you're a burster, not a newbie, and you were born to rule the board. Now simply just go and play your way out of the riddle by bursting yourself out.";
+  static const String about="Team Exordium intends to compete in hackathons and create projects that stand out from the crowd. Puzzle Buster is another result of this motivation, and it was created for 'Flutter Puzzle Hack 2022' by Jatin Gupta and Deepak Lohmod. Were you wowed by our efforts? So, what's stopping you from staring our project on github and supporting it? Feel free to contact us if you are interested in working together or need assistance.";
 
   @override
   void initState() {
@@ -49,58 +53,69 @@ class _HomePageState extends State<HomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Responsive.isMobile(context)?const SizedBox():NavBar(scaffoldKey: _key,),
+        Responsive.isMobile(context)?const SizedBox():NavBar(scaffoldKey: _key,showHomeContent: showHomeContent,),
         Expanded(
           child: Padding(
             padding: EdgeInsets.only(
               left: Responsive.size(context, mobile: 10, tablet: 30, desktop: 20),
               right: Responsive.size(context, mobile: 10, tablet: 50, desktop: 0),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  "Supreme Star",
-                  style: TextStyle(
-                    fontSize: Responsive.size(context, mobile: 30, tablet: 60, desktop: 45),
-                    color: Themes.primaryColor,
-                    fontWeight: Responsive.isTablet(context)?null:FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no ',
-                  style: TextStyle(
-                    fontSize: Responsive.size(context, mobile: 17, tablet: 28, desktop: 20),
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.justify,
-                ),
-                SizedBox(height: Responsive.isMobile(context)?10:0,),
-                TextButton.icon(
-                  onPressed: ()=>_key.currentState!.openEndDrawer(),
-                  label: Icon(Icons.arrow_forward_ios_outlined,color: Responsive.isMobile(context)?Themes.primaryColor:Colors.white,),
-                  icon: Text(
-                    "play now",
-                    style: TextStyle(color: Responsive.isMobile(context)?Themes.primaryColor:Colors.white,fontSize: Responsive.isDesktop(context)?16:24),
-                  ),
-                  style: TextButton.styleFrom(
-                    backgroundColor: Responsive.isMobile(context)?Colors.white:Themes.primaryColor,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Responsive.size(context, mobile: 15, tablet: 25, desktop: 30),
-                      vertical: Responsive.size(context, mobile: 10, tablet: 25, desktop: 20),
+            child: ValueListenableBuilder<bool>(
+              valueListenable: showHomeContent,
+              builder: (context,bool value,child) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      value?"Supreme Star":"About Us",
+                      style: TextStyle(
+                        fontSize: Responsive.size(context, mobile: 30, tablet: 60, desktop: 45),
+                        color: Themes.primaryColor,
+                        fontWeight: Responsive.isTablet(context)?null:FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ),
-                Responsive.isDesktop(context)?Text(
-                  "Version "+GameVersion.getCurrentVersion(),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xb5ffffff),
-                  ),
-                  textAlign: TextAlign.left,
-                ):const SizedBox(),
-              ],
+                    Text(
+                      value?home:about,
+                      style: TextStyle(
+                        fontSize: Responsive.size(context, mobile: 17, tablet: 28, desktop: 20),
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
+                    SizedBox(height: Responsive.isMobile(context)?10:0,),
+                    TextButton.icon(
+                      onPressed: (){
+                        if(value){
+                          _key.currentState!.openEndDrawer();
+                        } else {
+                          Dialogs.launchUrl('https://www.linkedin.com/in/xonedesigner/');
+                        }
+                      },
+                      label: Icon(Icons.arrow_forward_ios_outlined,color: Responsive.isMobile(context)?Themes.primaryColor:Colors.white,),
+                      icon: Text(
+                        value?"play now":"contact us",
+                        style: TextStyle(color: Responsive.isMobile(context)?Themes.primaryColor:Colors.white,fontSize: Responsive.isDesktop(context)?16:24),
+                      ),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Responsive.isMobile(context)?Colors.white:Themes.primaryColor,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Responsive.size(context, mobile: 15, tablet: 25, desktop: 30),
+                          vertical: Responsive.size(context, mobile: 10, tablet: 25, desktop: 20),
+                        ),
+                      ),
+                    ),
+                    Responsive.isDesktop(context)?Text(
+                      "Version "+GameVersion.getCurrentVersion(),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Color(0xb5ffffff),
+                      ),
+                      textAlign: TextAlign.left,
+                    ):const SizedBox(),
+                  ],
+                );
+              }
             ),
           ),
         ),
@@ -168,7 +183,7 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.black,
                           child: Marquee(
                             blankSpace: 5,
-                            text: 'There once was a boy who told this story about a boy: "',
+                            text: 'This project was created in Flutter for "Flutter Puzzle Hack 2022" and is the most imaginative yet solvable slide puzzle you can conceive. Please feel free to look at the code on our github and utilise it to help you develop your skills.',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: Responsive.size(context, mobile: 16, tablet: 20, desktop: 13),
@@ -322,7 +337,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         SizedBox(height: Responsive.isDesktop(context)?30:10,),
                         const Text(
-                          'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. ',
+                          'You can play this as a single player or multiplayer game, but the goal is to solve the puzzle by tapping on the tiles surrounding the empty tile and arranging the tiles in ascending order beginning with 1 and ending with the empty tile. When you finish a round in single mode, your score is saved to the leaderboard, whereas in multiplayer mode, the next round begins if you have selected more than one round. You can also change the number of tiles on the board and the number of rounds.',
                           style: TextStyle(
                             fontFamily: 'Raleway',
                             fontSize: 18,

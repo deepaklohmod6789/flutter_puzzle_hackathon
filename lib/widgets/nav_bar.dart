@@ -6,9 +6,10 @@ import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 
 class NavBar extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
+  final ValueNotifier<bool> showHomeContent;
   late final ButtonStyle buttonStyle;
 
-  NavBar({Key? key,required this.scaffoldKey}) : super(key: key){
+  NavBar({Key? key,required this.scaffoldKey,required this.showHomeContent}) : super(key: key){
     buttonStyle=TextButton.styleFrom().copyWith(
       foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
         if (states.contains(MaterialState.hovered)) {
@@ -44,7 +45,7 @@ class NavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           TextButton(
-            onPressed: (){},
+            onPressed: ()=>showHomeContent.value=true,
             style: buttonStyle,
             child: Text(
               'home',
@@ -72,7 +73,7 @@ class NavBar extends StatelessWidget {
           ),
           TextButton(
             style: buttonStyle,
-            onPressed: () { },
+            onPressed: ()=>showHomeContent.value=false,
             child: Text(
               'about us',
               style: TextStyle(fontSize: Responsive.isDesktop(context)?16:22,fontWeight: FontWeight.w500),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_puzzle_hackathon/classes/dialogs.dart';
 import 'package:flutter_puzzle_hackathon/constants/themes.dart';
 import 'package:flutter_puzzle_hackathon/widgets/responsive.dart';
 
@@ -18,9 +19,13 @@ class SideBar extends StatelessWidget {
             flex: 1,
             child: Center(
               child: IconButton(
-                onPressed: (){},
+                onPressed: ()=>Dialogs.launchUrl('https://github.com/deepaklohmod6789/flutter_puzzle_hackathon'),
                 padding: EdgeInsets.zero,
-                icon: Icon(Icons.more_vert_rounded,size: Responsive.isDesktop(context)?40:60,),
+                icon: Image.asset(
+                  'assets/github.png',
+                  width: Responsive.isDesktop(context)?40:60,
+                  height: Responsive.isDesktop(context)?40:60,
+                ),
               ),
             ),
           ),

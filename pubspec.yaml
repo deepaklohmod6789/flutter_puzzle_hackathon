@@ -41,6 +41,7 @@ dependencies:
   fluro: ^2.0.3
   fluttertoast: ^8.0.8
   universal_html: ^2.0.8
+  url_launcher: ^6.0.20
   marquee: ^2.2.1
   stop_watch_timer: ^1.3.1
 
