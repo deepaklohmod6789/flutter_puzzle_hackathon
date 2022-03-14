@@ -20,7 +20,7 @@ class CookieManager {
         List<String> map = listValues[i].split("=");
         String name = map[0].trim();
         if(name!='currentUserName'){
-          cookies = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+          html.document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
       }
     }

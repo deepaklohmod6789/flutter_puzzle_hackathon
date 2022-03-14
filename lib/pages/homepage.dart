@@ -196,7 +196,7 @@ class _HomePageState extends State<HomePage> {
                           actions: const [SizedBox()],
                           centerTitle: true,
                           leading: IconButton(
-                            onPressed: (){},
+                            onPressed: ()=>_key.currentState!.openEndDrawer(),
                             icon: const Icon(Icons.more_vert_rounded,size: 30,color: Colors.black,),
                           ),
                           title: const Text(

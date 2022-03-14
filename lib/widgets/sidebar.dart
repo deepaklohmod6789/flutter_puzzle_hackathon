@@ -32,10 +32,10 @@ class SideBar extends StatelessWidget {
           Expanded(
             flex: 4,
             child: Center(
-              child: IconButton(
-                onPressed: (){},
-                padding: EdgeInsets.zero,
-                icon: Icon(Icons.lock,size: Responsive.isDesktop(context)?30:50,color: Themes.primaryColor,),
+              child: Image.asset(
+                'assets/logo.png',
+                height: Responsive.isDesktop(context)?40:50,
+                width: Responsive.isDesktop(context)?40:50,
               ),
             ),
           ),
@@ -50,7 +50,7 @@ class SideBar extends StatelessWidget {
                 ),
                 SizedBox(height: Responsive.isDesktop(context)?10:40,),
                 IconButton(
-                  onPressed: (){},
+                  onPressed: ()=>Dialogs.launchUrl('https://flutterhack.devpost.com/'),
                   padding: EdgeInsets.zero,
                   icon: Icon(Icons.live_help_rounded,size: Responsive.isDesktop(context)?25:45),
                 ),
